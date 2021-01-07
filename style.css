@@ -1,0 +1,11 @@
+body {
+	font-family: 'Space Mono', monospace;
+}
+.center {
+	text-align: center;
+}
+
+
+#execute {
+	margin-top:10px;
+}

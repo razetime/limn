@@ -1,0 +1,11 @@
+{
+	"version": "0.1.0",
+	"command": "Firefox",
+	"osx": {
+		"command": "/Applications/Firefox.app/Contents/MacOS/firefox"
+	},
+	"args": [
+		"${file}"
+	],
+	"problemMatchers": []
+}

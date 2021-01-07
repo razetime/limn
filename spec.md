@@ -30,12 +30,10 @@ you can use the arrow symbols (`→←↑↓↖↗↘↙`) to set direction.
 
 `⊡` is used to execute a string of direction commands on the Code Canvas. Effectively, executes a few arrow commands and fills the deque with the result.
 
-`⮺` is used for copying. It takes a string and an integer argument.
+`⮺` is used for copying. It takes an integer argument. The integer is the number of characters in front of the pointer to copy.
 
-* The string is an arrow pattern that shows where data should be copied to.
-* The integer is the number of characters in front of the pointer to copy.
-
-This is the main method for self-modification, and copying stored data.
+`🖉` is the main method for self-modification. It takes a string or integer, and prints it in the direction(s) specified by an arrow string.
+Eg: "3→4↑" prints 3 characters to the right and 4 characters upward.
 
 `⋒` is a conditional. Continues in the current direction for a truthy value, otherwise turns 90&deg; clockwise.
 
@@ -49,17 +47,20 @@ I'm not sure If I want to add trig operators.
 
 In the drawing canvas, the pointer is not constantly moving. It functions similar to a LOGO/Turtle graphics marker.
 
+The default color is #000000ff.
+The default stroke width is 1px. 
+
 **Drawing-only commands:**
 
 These are commands which operate on the drawing canvas alone.
-
-`🖉` prints a string or a line of length n, based on it's argument, in the current cursor direction.
 
 `⦚` changes line colour and thickness, given a string and an integer. Thickness value also controls text size.
 
 `■` fills a closed area with a specific color, if it is a valid hex string, transparency included(format: `#XXXXXXYY` where X is color and Y is opacity).
 
 **Modified commands:**
+
+`🖉` prints a string or a line of length n, based on it's argument, in the current cursor direction.
 
 `🞜` Is the prefix for all the commands in this section. Converts the next command to a drawing command.
 
