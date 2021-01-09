@@ -1,16 +1,20 @@
 ## Limn Language Specification
 
-There are two canvases. one is your code itself and the other is an(infinite) color grid.
+There are two canvases. one is your code itself and the other is a color grid.
+
+The code canvas is a fixed grid that wraps to the other side(like in Fish).
+
+The color canvas extends forever in all directions, but the final result will fit the size of the drawing.
 
 ## Code canvas:
 
 Execution of code starts at 0,0.
 
-Pointer starts by moving to the right. The pointer will move forever in the same direction until it reaches another command.
+The cursor starts by moving to the right. The cursor will move forever in the same direction until it reaches another command.
 
 Data is put on a single deque which can hold five items at a time.
 
-Data and commands can be accessed again by moving the pointer over them.
+Data and commands can be accessed again by moving the cursor over them.
 
 The two main types are integers and a strings.
 
@@ -24,28 +28,36 @@ Any sequence of numeric digits is a number. Spaces are the delimiter between num
 
 you can use the arrow symbols (`→←↑↓↖↗↘↙`) to set direction.
 
-`⟳` is used to rotate the direction of the pointer clockwise by a number of degrees. With a single integer argument, it rotates 45 × n degrees, otherwise, rotates by 90 degrees.
+` `(space) is a NOP, meaning it does nothing.
+
+`⟳` is used to rotate the direction of the cursor clockwise by a number of degrees. With a single integer argument, it rotates 45 × n degrees, otherwise, rotates by 90 degrees.
 
 `⊛` sets a random direction(1-8).
 
-`⊡` is used to execute a string of direction commands on the Code Canvas. Effectively, executes a few arrow commands and fills the deque with the result.
+`⊡` is used to execute a string of arrow commands on the Code Canvas. Effectively, executes a few arrow commands and fills the deque with the result.
 
-`⮺` is used for copying. It takes an integer argument. The integer is the number of characters in front of the pointer to copy.
+`⮺` is used for copying. It takes an integer argument. The integer is the number of characters in front of the cursor to copy.
 
 `🖉` is the main method for self-modification. It takes a string or integer, and prints it in the direction(s) specified by an arrow string.
 Eg: "3→4↑" prints 3 characters to the right and 4 characters upward.
 
 `⋒` is a conditional. Continues in the current direction for a truthy value, otherwise turns 90&deg; clockwise.
 
+`꩜` is a warp. If the next command is an arrow, teleports to another warp in the same direction. If the next command is NOP(space), then teleports to the nearest warp, in terms of manhattan distance. If there are no other warps, moves to (0,0).
+
 `≈` casts from string to integer, and back.
 
 `+-×÷` are their respective arithmetic operators.
 
-I'm not sure If I want to add trig operators.
+`¿` prints the current state of the code canvas and the current state of the deque to the console/debug area.
+
+`⊗` will end the program. You can also use an error to end the program, sorta like a conditional.
+
+I'm not sure If I want to add trig operators, but it would make sense to.
 
 ## Drawing Canvas:
 
-In the drawing canvas, the pointer is not constantly moving. It functions similar to a LOGO/Turtle graphics marker.
+In the drawing canvas, the cursor is not constantly moving. It functions similar to a LOGO/Turtle graphics marker.
 
 The default color is #000000ff.
 The default stroke width is 1px. 
@@ -53,6 +65,8 @@ The default stroke width is 1px.
 **Drawing-only commands:**
 
 These are commands which operate on the drawing canvas alone.
+
+`⌒` draws an arc from the current point, given distance and radius.
 
 `⦚` changes line colour and thickness, given a string and an integer. Thickness value also controls text size.
 
@@ -66,7 +80,9 @@ These are commands which operate on the drawing canvas alone.
 
 `→←↑↓↖↗↘↙` Set direction in the drawing canvas.
 
-`⟳` Takes a single integer n and rotates n degrees from the current direction. A more fine tuned way to manipulate angle.
+`⟳` Takes a single number n and rotates n degrees from the current direction. A more fine tuned way to manipulate angle.
 
 `⊛` sets a random direction in the drawing canvas(1-360).
+
+`⮺` copies a region given width and height and pushes an Image Object to the deque.
 
