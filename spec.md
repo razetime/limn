@@ -2,7 +2,7 @@
 
 There are two canvases. one is your code itself and the other is a color grid.
 
-The code canvas is a fixed grid that wraps to the other side(like in Fish).
+The code canvas extends forever in all directions.
 
 The color canvas extends forever in all directions, but the final result will fit the size of the drawing.
 
@@ -12,13 +12,13 @@ Execution of code starts at 0,0.
 
 The cursor starts by moving to the right. The cursor will move forever in the same direction until it reaches another command.
 
-Data is put on a single deque which can hold five items at a time.
+Data is put on a single fixed-size stack which can hold five items at a time. Items are discarded from the bottom when the stack gets full.
 
 Data and commands can be accessed again by moving the cursor over them.
 
 The two main types are integers and a strings.
 
-All commands take their input from the deque.
+All commands take their input from the stack.
 
 All commands use prefix notation.
 
@@ -34,11 +34,12 @@ you can use the arrow symbols (`→←↑↓↖↗↘↙`) to set direction.
 
 `⊛` sets a random direction(1-8).
 
-`⊡` is used to execute a string of arrow commands on the Code Canvas. Effectively, executes a few arrow commands and fills the deque with the result.
+`⊡` is used to retrieve data. It takes an arrow string and retrieves the data traced by its path. The program cursor is not moved. All commands are ignored, and only strings/integers are parsed.
 
-`⮺` is used for copying. It takes an integer argument. The integer is the number of characters in front of the cursor to copy.
+`⮺` is used for copying. It takes two integer arguments m and n, and copies an area of m x n
+ characters to stack as a list of strings. (needs more changes and clarification)
 
-`🖉` is the main method for self-modification. It takes a string or integer, and prints it in the direction(s) specified by an arrow string.
+`🖉` is the main method for self-modification. It takes a string or integer, and prints it in the direction(s) specified by an arrow string. This moves the program cursor.
 Eg: "3→4↑" prints 3 characters to the right and 4 characters upward.
 
 `⋒` is a conditional. Continues in the current direction for a truthy value, otherwise turns 90&deg; clockwise.
@@ -49,7 +50,7 @@ Eg: "3→4↑" prints 3 characters to the right and 4 characters upward.
 
 `+-×÷` are their respective arithmetic operators.
 
-`¿` prints the current state of the code canvas and the current state of the deque to the console/debug area.
+`¿` prints the current state of the code canvas and the current state of the stack to the console/debug area.
 
 `⊗` will end the program. You can also use an error to end the program, sorta like a conditional.
 
@@ -84,5 +85,5 @@ These are commands which operate on the drawing canvas alone.
 
 `⊛` sets a random direction in the drawing canvas(1-360).
 
-`⮺` copies a region given width and height and pushes an Image Object to the deque.
+`⮺` copies a region given width and height and pushes an Image Object to the stack.
 

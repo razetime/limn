@@ -8,22 +8,6 @@
 // 🡸🡺🡹🡻🡼🡽🡾🡿• for visual grid movement
 // ⊗ to end the program.
 
-// Code Canvas variables:
-let grid = [];     // code input
-let deque = []; // code stack
-let data = "" //holds the current scalar till it is fully parsed
-let parsInt = false;
-let parsString = false;
-let cPos = [0, 0];  // text pointer position
-let cPtrCts = "";   // text pointer contents
-let cStep = [0, 1]; // text pointer direction
-
-// Drawing Canvas variables:
-let drawCanvas = document.getElementById("output");
-let ctx = drawCanvas.getContext("2d");
-let dPos = [0, 0];  // canvas pointer position
-let dRot = 0; // pointer rotation in degrees
-let dPtrCts = ["#ffffff00", 1];  // canvas pointer color and thickness (in px)
 
 // Helper function for floodfill
 function getPixel(pixelData, x, y) {
@@ -86,8 +70,23 @@ function rotate(pt, angle) {
 	return [Math.floor(x * c + y * s), Math.floor(x * s + y * c)];
 }
 
+function padAllSides(grid, factor) {
+	let max = Math.max(...grid.map(x => x.length));
+	let tb = Array(factor).fill(' '.repeat(max));
+	let lr = ' '.repeat(factor);
+	grid = tb.concat(grid).concat(tb);
+	grid = grid.map(x => lr + x + lr);
+
+	return grid;
+}
+
+const zipAdd = (a, b) => a.map((k, i) => k + b[i]);
+
+// for directions ←↑↓↖↗↘↙
+const dirs = [[0, 1], [0, -1], [-1, 0], [1, 0], [-1, -1], [-1, 1], [1, 1], [1, -1]];
+
 // returns a parsed arrow string for easy usage
-function splitArrowString(directions) {
+function parseArrowString(directions) {
 	let regex = /(\d+|\D+)/g
 	let match = regex.exec(directions);
 	let matches = [];
@@ -98,34 +97,53 @@ function splitArrowString(directions) {
 		matches.push(match[0]);
 		match = regex.exec(directions);
 	}
+	for (var i = 1; i < matches.length; i += 2) {
+		matches[i] = dirs['→←↑↓↖↗↘↙'.indexOf(matches[i])];
+	}
 	return matches;
 }
 
-const zipAdd = (a, b) => a.map((k, i) => k + b[i]);
-
-// for directions ←↑↓↖↗↘↙
-const dirs = [[0, 1], [0, -1], [-1, 0], [1, 0], [-1, -1], [-1, 1], [1, 1], [1, -1]];
-
 // Execute Limn code
-function execute() {
-	while (grid[pos[0]][pos[1]] != '⊗') {
-		let ch = grid[pos[0]][pos[1]];
+function execute(grid) {
+	// Code Canvas variables:
+	let stack = []; // code stack
+	let data = "" //holds the current scalar till it is fully parsed
+	let parsInt = false;
+	let parsString = false;
+	let cPos = [0, 0];  // text pointer position
+	let cStep = [0, 1]; // text pointer direction
+
+	// Drawing Canvas variables:
+	let drawCanvas = document.getElementById("output");
+	let ctx = drawCanvas.getContext("2d");
+	let dPos = [0, 0];  // canvas pointer position
+	let dRot = 0; // pointer rotation in degrees
+	let dPtrCts = ["#ffffff00", 1];  // canvas pointer color and thickness (in px)
+	while (grid[cPos[0]][cPos[1]] != '⊗') {
+		let ch = grid[cPos[0]][cPos[1]];
 
 		//Taking in data
 		if (ch >= '0' && ch <= '9' && !parsInt && !parsString) {
 			data += ch;
 			parsInt = true;
 		}
-		else if (parsInt && ch < '0' && ch > '9') {
-			deque.push(Number(data));
+		else if (ch >= '0' && ch <= '9' && parsInt) {
+			data += ch;
+			console.log("getting int");
+		}
+		else if (parsInt && (ch < '0' || ch > '9')) {
+			parsInt = false;
+			stack.push(Number(data));
 			data = "";
+			console.log("got int");
+
 		}
 		else if (ch == '"' && !parsString) {
 			parsString = true;
 		}
 		else if (ch == '"' && parsString) {
 			parsString = false;
-			deque.push(data);
+			stack.push(data);
 			data = "";
 		}
 		else if (parsString) {
@@ -133,24 +151,50 @@ function execute() {
 		}
 		else {
 			if ('→←↑↓↖↗↘↙'.indexOf(ch)) {
-				step = dirs['→←↑↓↖↗↘↙'.indexOf(ch)];
+				cStep = dirs['→←↑↓↖↗↘↙'.indexOf(ch)];
 			}
 			if (ch == '⟳') {
-				if (typeof deque[deque.length - 1] === "number") {
-					step = rotate(step, 45 * Math.floor(deque.pop));
+				if (typeof stack[stack.length - 1] === "number") {
+					cStep = rotate(step, 45 * Math.floor(stack.pop));
 				}
 				else {
-					step = rotate(step, 90);
+					cStep = rotate(step, 90);
 				}
 			}
 			if (ch == '⊛') {
-				step = dirs[Math.floor(Math.random() * dirs.length)];
+				cStep = dirs[Math.floor(Math.random() * dirs.length)];
 			}
-			if (ch == '⊡') { //TODO
+			if (ch == '⊡') {
+				let dirs = parseArrowString(stack.pop());
+				let fac = Math.max(...dirs.flat());
+				let str = "";
+				let phCursor = zipAdd(cPos, [fac, fac]);
+				grid = padAllSides(grid, fac);
+				for (var i = 0; i < dirs.length; i += 2) {
+					let tStep = dirs[i + 1];
+					for (var j = 0; j < Number(dirs[i]); j++) {
+						str += grid[phCursor[0]][phCursor[1]];
+						phCursor = zipAdd(tStep, phCursor);
+					}
+				}
+
+				//get the data, and add to stack
+				let regex = /(\d+|"\D+")/g
+				let match = regex.exec(str);
+				let matches = [];
+				while (match != null) {
+					// matched text: match[0]
+					// match start: match.index
+					// capturing group n: match[n]
+					matches.push(match[0]);
+					match = regex.exec(str);
+				}
+				console.log(str, matches);
+				stack = stack.concat(matches);
 
 			}
 			if (ch == '⮺') { //TODO
-				if (typeof deque[deque.length - 1] === "number") {
+				if (typeof stack[stack.length - 1] === "number") {
 
 				}
 				else {
@@ -158,11 +202,13 @@ function execute() {
 				}
 			}
 			if (ch == '🖉') {
+				let print = stack.pop();
 
 			}
 		}
 
-		pos = zipAdd(pos, step);
+		cPos = zipAdd(cPos, cStep);
+		console.log(stack, data);
 
 	}
 }
@@ -172,5 +218,7 @@ document.getElementById("execute").addEventListener("click", function (e) {
 	let max = Math.max(...grid.map(x => x.length));
 	grid = grid.map(x => x.padEnd(max));
 	console.log(grid);
+	execute(grid);
+
 });
 

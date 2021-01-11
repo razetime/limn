@@ -6,7 +6,7 @@ The idea behind limn is to create a self modifying language that can create imag
 ## Implemented functionality:
 
 #### Code canvas
-* Pushing Strings and Numbers to deque
+* Pushing Strings and Numbers to stack
 * Setting direction using arrow commands
 * Rotating cursor direction by 45&deg; and 90&deg;
 * Choosing a random direction
