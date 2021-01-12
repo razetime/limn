@@ -112,6 +112,7 @@ function execute(grid) {
 	let parsString = false;
 	let cPos = [0, 0];  // text pointer position
 	let cStep = [0, 1]; // text pointer direction
+	let warping = false;
 
 	// Drawing Canvas variables:
 	let drawCanvas = document.getElementById("output");
@@ -194,15 +195,28 @@ function execute(grid) {
 
 			}
 			if (ch == '⮺') { //TODO
-				if (typeof stack[stack.length - 1] === "number") {
-
-				}
-				else {
-					console.log('invalid types for copy(⮺)')
-				}
+				console.log("Idk what to do with ⮺ yet");
 			}
 			if (ch == '🖉') {
-				let print = stack.pop();
+				let dirs = parseArrowString(stack.pop());
+				let print = String(stack.pop());
+				let c = 0;
+				cPos = zipAdd(cPos, step);
+				for (var i = 0; i < dirs.length; i += 2) {
+					let tStep = dirs[i + 1];
+					for (var j = 0; j < Number(dirs[i]); j++) {
+						grid[cPos[0]][cPos[1]] = print[c];
+						c++;
+					}
+				}
+			}
+			if (ch == '⋒') {
+				let bool = stack.pop();
+				if (!bool) {
+					cStep = rotate(cStep, 90);
+				}
+			}
+			if (ch == '꩜') { // TODO
 
 			}
 		}

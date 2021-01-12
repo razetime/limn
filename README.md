@@ -11,6 +11,9 @@ The idea behind limn is to create a self modifying language that can create imag
 * Rotating cursor direction by 45&deg; and 90&deg;
 * Choosing a random direction
 * Tokenizing an arrow string
+* Retrieving data in place
+* Self modifying printing
+* Conditionals
 
 #### Drawing canvas
 (None so far)

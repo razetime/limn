@@ -36,8 +36,8 @@ you can use the arrow symbols (`→←↑↓↖↗↘↙`) to set direction.
 
 `⊡` is used to retrieve data. It takes an arrow string and retrieves the data traced by its path. The program cursor is not moved. All commands are ignored, and only strings/integers are parsed.
 
-`⮺` is used for copying. It takes two integer arguments m and n, and copies an area of m x n
- characters to stack as a list of strings. (needs more changes and clarification)
+<del>`⮺` is used for copying. It takes four integer arguments a, m and n, and copies an area of m x n
+ characters to stack as a list of strings. Ignores direction.</del> (needs more changes and clarification)
 
 `🖉` is the main method for self-modification. It takes a string or integer, and prints it in the direction(s) specified by an arrow string. This moves the program cursor.
 Eg: "3→4↑" prints 3 characters to the right and 4 characters upward.
