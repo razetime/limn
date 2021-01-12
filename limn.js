@@ -218,16 +218,17 @@ function execute(grid) {
 			}
 			if (ch == '꩜') {
 				let warpCoords = [];
-				for (var i = 0; i < grid.length(); i++) {
-					for (var j = 0; j < grid[i].length(); j++) {
+				for (var i = 0; i < grid.length; i++) {
+					for (var j = 0; j < grid[i].length; j++) {
 						if (grid[i][j] == '꩜' && i != cPos[0] && j != cPos[1]) {
 							warpCoords.push([i, j]);
 						}
 					}
 				}
+				console.log(warpCoords)
 				let t = cPos;
-				cPos = zipAdd(cPos, step);
-				if (warpCoords.length() == 0) {
+				cPos = zipAdd(cPos, cStep);
+				if (warpCoords.length == 0) {
 					cPos = [0, 0];
 				}
 				else if (1 + '→←↑↓↖↗↘↙'.indexOf(grid[cPos[0]][cPos[1]])) {
@@ -239,14 +240,14 @@ function execute(grid) {
 				else {
 					let ncPos = t.map(x => -x);
 					let dists = warpCoords.map(y => (zipAdd(y, ncPos)).reduce((a, b) => a + b, 0));
-					cPos = warpCoords(dists.indexOf(Math.max(...dists)));
+					cPos = warpCoords[dists.indexOf(Math.max(...dists))];
 				}
 
 			}
 		}
 
 		cPos = zipAdd(cPos, cStep);
-		console.log(stack, data);
+		console.log(grid, stack, data);
 
 	}
 }
