@@ -14,6 +14,7 @@ The idea behind limn is to create a self modifying language that can create imag
 * Retrieving data in place
 * Self modifying printing
 * Conditionals
+* Warping
 
 #### Drawing canvas
 (None so far)

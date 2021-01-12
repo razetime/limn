@@ -151,7 +151,7 @@ function execute(grid) {
 			data += ch;
 		}
 		else {
-			if ('→←↑↓↖↗↘↙'.indexOf(ch)) {
+			if (1 + '→←↑↓↖↗↘↙'.indexOf(ch)) {
 				cStep = dirs['→←↑↓↖↗↘↙'.indexOf(ch)];
 			}
 			if (ch == '⟳') {
@@ -216,7 +216,31 @@ function execute(grid) {
 					cStep = rotate(cStep, 90);
 				}
 			}
-			if (ch == '꩜') { // TODO
+			if (ch == '꩜') {
+				let warpCoords = [];
+				for (var i = 0; i < grid.length(); i++) {
+					for (var j = 0; j < grid[i].length(); j++) {
+						if (grid[i][j] == '꩜' && i != cPos[0] && j != cPos[1]) {
+							warpCoords.push([i, j]);
+						}
+					}
+				}
+				let t = cPos;
+				cPos = zipAdd(cPos, step);
+				if (warpCoords.length() == 0) {
+					cPos = [0, 0];
+				}
+				else if (1 + '→←↑↓↖↗↘↙'.indexOf(grid[cPos[0]][cPos[1]])) {
+					spStep = dirs['→←↑↓↖↗↘↙'.indexOf(grid[cPos[0]][cPos[1]])];
+					while (grid[cPos[0]][cPos[1]] != '꩜') {
+						cPos = zipAdd(cPos, spStep);
+					}
+				}
+				else {
+					let ncPos = t.map(x => -x);
+					let dists = warpCoords.map(y => (zipAdd(y, ncPos)).reduce((a, b) => a + b, 0));
+					cPos = warpCoords(dists.indexOf(Math.max(...dists)));
+				}
 
 			}
 		}
