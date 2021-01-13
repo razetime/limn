@@ -8,6 +8,10 @@
 // 🡸🡺🡹🡻🡼🡽🡾🡿• for visual grid movement
 // ⊗ to end the program.
 
+// for directions →↘↓↙←↖↑↗
+const dirs = [[0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, 1]];
+
+const rots = [0, 45, 90, 135, 180, 225, 270, 315];
 
 // Helper function for floodfill
 function getPixel(pixelData, x, y) {
@@ -61,13 +65,25 @@ function toRadians(angle) {
 	return angle * (Math.PI / 180);
 }
 
-function rotate(pt, angle) {
-	let a = toRadians(angle)
-	let c = Math.cos(a);
-	let s = Math.sin(a);
-	let x = pt[0];
-	let y = pt[1];
-	return [Math.floor(x * c + y * s), Math.floor(x * s + y * c)];
+// from https://stackoverflow.com/questions/17410809/how-to-calculate-rotation-in-2d-in-javascript
+function rotate(cx, cy, x, y, angle) { // drawing canvas rotation
+	let radians = (Math.PI / 180) * angle,
+		cos = Math.cos(radians),
+		sin = Math.sin(radians),
+		nx = (cos * (x - cx)) + (sin * (y - cy)) + cx,
+		ny = (cos * (y - cy)) - (sin * (x - cx)) + cy;
+	return [nx, ny];
+}
+
+function cRotate(x, y, angle) { // code canvas rotation
+	let index = -1;
+	for (var i = 0; i < dirs.length; i++) {
+		if (dirs[i][0] == x && dirs[i][1] == y) {
+			index = i;
+			break;
+		}
+	}
+	return dirs[(index + angle) % 8];
 }
 
 function padAllSides(grid, factor) {
@@ -81,11 +97,6 @@ function padAllSides(grid, factor) {
 }
 
 const zipAdd = (a, b) => a.map((k, i) => k + b[i]);
-
-
-const dirs = [[0, 1], [0, -1], [-1, 0], [1, 0], [-1, -1], [-1, 1], [1, 1], [1, -1]];
-// for directions →↘↓↙←↖↑↗
-const rots = [0, 45, 90, 135, 180, 225, 270, 315, 360];
 
 // returns a parsed arrow string for easy usage
 function parseArrowString(directions) {
@@ -125,7 +136,7 @@ function execute(grid) {
 
 	let dPos = [0, 0];  // canvas pointer position
 	let dRot = 0; // pointer rotation in degrees from the positive x axis
-	let dPtrCts = [0xffffffff, 1];  // canvas pointer color and thickness (in px)
+	let dPtrCts = ["#ffffffff", 1];  // canvas pointer color and thickness (in px)
 
 	ctx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
 
@@ -139,7 +150,7 @@ function execute(grid) {
 		}
 		else if (ch >= '0' && ch <= '9' && parsInt) {
 			data += ch;
-			console.log("getting int");
+			// console.log("getting int");
 		}
 		else if (parsInt && (ch < '0' || ch > '9')) {
 			parsInt = false;
@@ -165,15 +176,16 @@ function execute(grid) {
 			data += ch;
 		}
 		else {
-			if (1 + '→←↑↓↖↗↘↙'.indexOf(ch)) {
-				cStep = dirs['→←↑↓↖↗↘↙'.indexOf(ch)];
+			if (1 + '→↘↓↙←↖↑↗'.indexOf(ch)) {
+				cStep = dirs['→↘↓↙←↖↑↗'.indexOf(ch)];
 			}
 			if (ch == '⟳') {
 				if (typeof stack[stack.length - 1] === "number") {
-					cStep = rotate(step, 45 * Math.floor(stack.pop));
+					cStep = cRotate(cStep[0], cStep[1], Math.floor(stack.pop()));
+					console.log(cStep);
 				}
 				else {
-					cStep = rotate(step, 90);
+					cStep = cRotate(cStep[0], cStep[1], 2);
 				}
 			}
 			if (ch == '⊛') {
@@ -325,16 +337,20 @@ function execute(grid) {
 					if (typeof data == "number") {
 						ctx.beginPath();
 						ctx.moveTo(dPos[0], dPos[1]);
-						let rotated = rotate([dPos[0] + data, dPos[1]], dRot);
+						let rotated = rotate(dPos[0], dPos[1], dPos[0] + data, dPos[1], -dRot);
 						ctx.lineTo(rotated[0], rotated[1]);
+						console.log(rotated, cmd, dRot);
+						dPos = zipAdd(dPos, rotated);
+						ctx.stroke();
 					}
 				}
+				cPos = zipAdd(cPos, cStep);
 
 			}
 		}
 
 		cPos = zipAdd(cPos, cStep);
-		// console.log(grid, stack, data, ch);
+		console.log(cPos);
 
 	}
 }
