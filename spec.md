@@ -36,10 +36,9 @@ you can use the arrow symbols (`→←↑↓↖↗↘↙`) to set direction.
 
 `⊡` is used to retrieve data. It takes an arrow string and retrieves the data traced by its path. The program cursor is not moved. All commands are ignored, and only strings/integers are parsed.
 
-<del>`⮺` is used for copying. It takes four integer arguments a, m and n, and copies an area of m x n
- characters to stack as a list of strings. Ignores direction.</del> (needs more changes and clarification)
+`⮺` is used for copying. It takes an arrow string, and moves to the place it indicates. Then it takes two integers, m and n, and copies an area of m x n characters to stack as a newline separated string. Ignores direction. (needs more changes and clarification)
 
-`🖉` is the main method for self-modification. It takes a string or integer, and prints it in the direction(s) specified by an arrow string. This moves the program cursor.
+`🖉` is the main method for self-modification. It takes a single line string or integer, and prints it in the direction(s) specified by an arrow string. This moves the program cursor.
 Eg: "3→4↑" prints 3 characters to the right and 4 characters upward.
 
 `⋒` is a conditional. Continues in the current direction for a truthy value, otherwise turns 90&deg; clockwise.
@@ -52,16 +51,19 @@ Eg: "3→4↑" prints 3 characters to the right and 4 characters upward.
 
 `¿` prints the current state of the code canvas and the current state of the stack to the console/debug area.
 
+`⩫` takes a single line of input, as a string, and pushes it to the stack.
+
 `⊗` will end the program. You can also use an error to end the program, sorta like a conditional.
 
-I'm not sure If I want to add trig operators, but it would make sense to.
+I'm not sure if I want to add trig operators, but it would make sense to.
 
 ## Drawing Canvas:
 
 In the drawing canvas, the cursor is not constantly moving. It functions similar to a LOGO/Turtle graphics marker.
 
-The default color is #000000ff.
+The default color is 0xffffffff.
 The default stroke width is 1px. 
+The default direction is to the right.
 
 **Drawing-only commands:**
 
@@ -71,13 +73,13 @@ These are commands which operate on the drawing canvas alone.
 
 `⦚` changes line colour and thickness, given a string and an integer. Thickness value also controls text size.
 
-`■` fills a closed area with a specific color, if it is a valid hex string, transparency included(format: `#XXXXXXYY` where X is color and Y is opacity).
+`■` fills a closed area with a specific color, if it is a valid hex string, transparency included(format: `0xXXXXXXYY` where X is color and Y is opacity).
 
 **Modified commands:**
 
-`🖉` prints a string or a line of length n, based on it's argument, in the current cursor direction.
-
 `🞜` Is the prefix for all the commands in this section. Converts the next command to a drawing command.
+
+`🖉` prints a string or a line of length n, based on it's argument, in the current cursor direction.
 
 `→←↑↓↖↗↘↙` Set direction in the drawing canvas.
 
@@ -85,5 +87,5 @@ These are commands which operate on the drawing canvas alone.
 
 `⊛` sets a random direction in the drawing canvas(1-360).
 
-`⮺` copies a region given width and height and pushes an Image Object to the stack.
+`⮺` copies a region given arrow string, width and height and pushes an Image Object to the stack.
 

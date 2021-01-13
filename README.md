@@ -5,7 +5,7 @@ The idea behind limn is to create a self modifying language that can create imag
 
 ## Implemented functionality:
 
-#### Code canvas
+#### Code canvas - complete
 * Pushing Strings and Numbers to stack
 * Setting direction using arrow commands
 * Rotating cursor direction by 45&deg; and 90&deg;
@@ -15,6 +15,10 @@ The idea behind limn is to create a self modifying language that can create imag
 * Self modifying printing
 * Conditionals
 * Warping
+* Typecasting
+* Arithmetic ops
+* Taking Input
+
 
 #### Drawing canvas
 (None so far)

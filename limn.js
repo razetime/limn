@@ -82,8 +82,10 @@ function padAllSides(grid, factor) {
 
 const zipAdd = (a, b) => a.map((k, i) => k + b[i]);
 
-// for directions ←↑↓↖↗↘↙
+
 const dirs = [[0, 1], [0, -1], [-1, 0], [1, 0], [-1, -1], [-1, 1], [1, 1], [1, -1]];
+// for directions →↘↓↙←↖↑↗
+const rots = [0, 45, 90, 135, 180, 225, 270, 315, 360];
 
 // returns a parsed arrow string for easy usage
 function parseArrowString(directions) {
@@ -98,12 +100,15 @@ function parseArrowString(directions) {
 		match = regex.exec(directions);
 	}
 	for (var i = 1; i < matches.length; i += 2) {
+		matches[i - 1] = Number(matches[i - 1]);
 		matches[i] = dirs['→←↑↓↖↗↘↙'.indexOf(matches[i])];
 	}
 	return matches;
 }
 
 // Execute Limn code
+let drawCanvas = document.getElementById("output");
+let ctx = drawCanvas.getContext("2d");
 function execute(grid) {
 	// Code Canvas variables:
 	let stack = []; // code stack
@@ -112,14 +117,18 @@ function execute(grid) {
 	let parsString = false;
 	let cPos = [0, 0];  // text pointer position
 	let cStep = [0, 1]; // text pointer direction
-	let warping = false;
+	let debug = document.getElementById("console");
+	debug.innerHTML = "";
+	let input = document.getElementById("input").value.split("\n");
 
 	// Drawing Canvas variables:
-	let drawCanvas = document.getElementById("output");
-	let ctx = drawCanvas.getContext("2d");
+
 	let dPos = [0, 0];  // canvas pointer position
-	let dRot = 0; // pointer rotation in degrees
-	let dPtrCts = ["#ffffff00", 1];  // canvas pointer color and thickness (in px)
+	let dRot = 0; // pointer rotation in degrees from the positive x axis
+	let dPtrCts = [0xffffffff, 1];  // canvas pointer color and thickness (in px)
+
+	ctx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
+
 	while (grid[cPos[0]][cPos[1]] != '⊗') {
 		let ch = grid[cPos[0]][cPos[1]];
 
@@ -137,10 +146,15 @@ function execute(grid) {
 			stack.push(Number(data));
 			data = "";
 			console.log("got int");
+			cPos = zipAdd(cPos, cStep.map(x => -x));
 
 		}
 		else if (ch == '"' && !parsString) {
 			parsString = true;
+		}
+		else if (ch == '\\' && parsString) { // Standard JS Escape support
+			data += grid[cPos[0] + cStep[0]][cPos[1] + cStep[1]];
+			cPos = zipAdd(cPos, cStep.map(x => 2 * x));
 		}
 		else if (ch == '"' && parsString) {
 			parsString = false;
@@ -198,15 +212,22 @@ function execute(grid) {
 				console.log("Idk what to do with ⮺ yet");
 			}
 			if (ch == '🖉') {
+				console.log("Drawing");
 				let dirs = parseArrowString(stack.pop());
-				let print = String(stack.pop());
+				let print = (stack.pop()).toString();
+				console.log(dirs, print);
 				let c = 0;
-				cPos = zipAdd(cPos, step);
+				cPos = zipAdd(cPos, cStep);
 				for (var i = 0; i < dirs.length; i += 2) {
 					let tStep = dirs[i + 1];
 					for (var j = 0; j < Number(dirs[i]); j++) {
+						if (typeof (grid[cPos[0]] || [])[cPos[1]] === "undefined") {
+							grid = padAllSides(grid, 1);
+						}
 						grid[cPos[0]][cPos[1]] = print[c];
+						console.log(cPos, print[c]);
 						c++;
+						cPos = zipAdd(cPos, tStep);
 					}
 				}
 			}
@@ -244,20 +265,154 @@ function execute(grid) {
 				}
 
 			}
+			if (ch == '≈') {
+				let top = stack.pop();
+				if (typeof top === "number") {
+					stack.push(String(top));
+				}
+				else {
+					stack.push(Number(top));
+				}
+			}
+			if (ch == '+') {
+				let b = stack.pop();
+				let a = stack.pop();
+				stack.push(a + b);
+			}
+			if (ch == '-') {
+				let b = stack.pop();
+				let a = stack.pop();
+				stack.push(a - b);
+			}
+			if (ch == '×') {
+				let b = stack.pop();
+				let a = stack.pop();
+				let tb = typeof b;
+				let ta = typeof a;
+				if (tb == "number" && ta == "number") {
+					stack.push(a * b);
+				}
+				else if (tb == "number" && ta == "string") {
+					stack.push(a.repeat(b));
+				}
+				else if (ta == "number" && tb == "string") {
+					stack.push(b.repeat(a));
+				}
+			}
+			if (ch == '÷') {
+				let b = stack.pop();
+				let a = stack.pop();
+				stack.push(a / b);
+			}
+			if (ch == '¿') { // Debug stats
+				debug.innerHTML += "<b>Position:</b> " + String(cPos) + "\n\n";
+				debug.innerHTML += "Grid:\n";
+				console.log(grid.map(x => x.join('')).join("\n"));
+				debug.innerHTML += grid.map(x => x.join('')).join("\n");
+				debug.innerHTML += "\n\nStack:\n";
+				debug.innerHTML += JSON.stringify(stack) + "\n\n";
+			}
+			if (ch == '⩫') {
+				stack.push(input.shift());
+			}
+			if (ch == '🞜') {
+				let cmd = grid[cPos[0] + cStep[0]][cPos[1] + cStep[1]];
+				if (1 + '→↘↓↙←↖↑↗'.indexOf(cmd)) {
+					dRot = rots['→↘↓↙←↖↑↗'.indexOf(cmd)];
+				}
+				if (cmd == '🖉') {
+					let data = stack.pop();
+					if (typeof data == "number") {
+						ctx.beginPath();
+						ctx.moveTo(dPos[0], dPos[1]);
+						let rotated = rotate([dPos[0] + data, dPos[1]], dRot);
+						ctx.lineTo(rotated[0], rotated[1]);
+					}
+				}
+
+			}
 		}
 
 		cPos = zipAdd(cPos, cStep);
-		console.log(grid, stack, data);
+		// console.log(grid, stack, data, ch);
 
 	}
 }
 
-document.getElementById("execute").addEventListener("click", function (e) {
-	grid = document.getElementById("code").value.split('\n');
-	let max = Math.max(...grid.map(x => x.length));
-	grid = grid.map(x => x.padEnd(max));
-	console.log(grid);
-	execute(grid);
 
+window.addEventListener('DOMContentLoaded', (event) => {
+	// Setup keyboard
+	let charset = `→|Right
+←|Left
+↑|Up
+↓|Down
+↖|UpLeft
+↗|UpRight
+↘|DownRight
+↙|DownLeft
+⟳|Rotate 90/Rotate 45*n
+⊛|Random Direction
+⊡|Execute Arrow String
+⮺|Copy Area
+🖉|Write to Canvas
+꩜|Warp
+-
+×|Multiply
+÷|Divide
+≈|Cast to String/Int
+⋒|If/Else
+-
+⩫|Get Input
+¿|Dump Debug data
+⊗|End Program
+-
+🞜|Convert to Drawing Command
+⌒|Draw a curve
+⦚|Change Line Attributes
+■|Paint Bucket`;
+	let kb = document.getElementById("keyboard");
+	let data = charset.split('\n');
+	for (var i = 0; i < data.length; i++) {
+		if (data[i] == "-") {
+			kb.innerHTML += "<span class=\"spacer\"></span>"
+		}
+		else {
+			let dat = data[i].split("|");
+			kb.innerHTML += "<span class=\"key\" title=\"" + dat[1] + "\">" + dat[0] + "</span>";
+		}
+
+	}
+	document.querySelectorAll('.key').forEach(item => {
+
+		item.addEventListener('click', event => {
+			let box = document.getElementById("code");
+			let val = box.value;
+			let start = box.selectionStart;
+			let end = box.selectionEnd;
+			box.value = val.slice(0, start) + event.target.innerHTML + val.slice(end);
+			box.selectionStart = start + 1;
+			box.selectionEnd = start + 1;
+			box.focus();
+
+		})
+	});
+
+	// Setup canvas
+	ctx.font = '16px Space Mono';
+	ctx.textAlign = "center";
+	ctx.fillStyle = "#ffffff";
+	ctx.fillText('Output will appear here!', drawCanvas.width / 2, drawCanvas.height / 2);
+
+
+	document.getElementById("execute").addEventListener("click", function (e) {
+		grid = document.getElementById("code").value.split('\n');
+		let max = Math.max(...grid.map(x => x.length));
+		grid = grid.map(x => Array.from(x.padEnd(max)));
+		console.log(grid);
+		execute(grid);
+
+	});
 });
+
+
 

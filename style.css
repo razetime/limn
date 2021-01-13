@@ -9,3 +9,44 @@ body {
 #execute {
 	margin-top:10px;
 }
+
+pre,code,textarea{
+	font-family: "DejaVu Sans Mono", monospace;
+	color: #d3d7cf;
+}
+
+#keyboard {
+	border: 1px solid #fff;
+	margin-bottom: 1.5rem;
+}
+
+.spacer {
+	margin:5px;
+}
+
+.key {
+	padding: 2px;
+	font-family: "DejaVu Sans Mono", monospace;
+}
+.key:hover {
+	background-color: #222;
+	color:#fff;
+	cursor: crosshair;
+
+}
+
+.title {
+	text-transform: uppercase;
+}
+.section {
+	margin-top: 2vh;
+}
+
+canvas {
+	padding-left: 0;
+    padding-right: 0;
+    margin-left: auto;
+    margin-right: auto;
+	display: block;
+	border: 1px solid #fff;
+}
