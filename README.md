@@ -21,4 +21,4 @@ The idea behind limn is to create a self modifying language that can create imag
 
 
 #### Drawing canvas
-(None so far)
+* Text and line drawing

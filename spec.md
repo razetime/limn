@@ -77,7 +77,7 @@ These are commands which operate on the drawing canvas alone.
 
 **Modified commands:**
 
-`🞜` Is the prefix for all the commands in this section. Converts the next command to a drawing command.
+`•` Is the prefix for all the commands in this section. Converts the next command to a drawing command.
 
 `🖉` prints a string or a line of length n, based on it's argument, in the current cursor direction.
 

@@ -139,6 +139,7 @@ function execute(grid) {
 	let dPtrCts = ["#ffffffff", 1];  // canvas pointer color and thickness (in px)
 
 	ctx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
+	ctx.textAlign = "left";
 
 	while (grid[cPos[0]][cPos[1]] != '⊗') {
 		let ch = grid[cPos[0]][cPos[1]];
@@ -327,7 +328,7 @@ function execute(grid) {
 			if (ch == '⩫') {
 				stack.push(input.shift());
 			}
-			if (ch == '🞜') {
+			if (ch == '•') {
 				let cmd = grid[cPos[0] + cStep[0]][cPos[1] + cStep[1]];
 				if (1 + '→↘↓↙←↖↑↗'.indexOf(cmd)) {
 					dRot = rots['→↘↓↙←↖↑↗'.indexOf(cmd)];
@@ -342,6 +343,15 @@ function execute(grid) {
 						console.log(rotated, cmd, dRot);
 						dPos = zipAdd(dPos, rotated);
 						ctx.stroke();
+					}
+					else {
+						ctx.save();
+						ctx.translate(dPos[0], dPos[1]);
+						ctx.rotate(dRot);
+						ctx.font = (dPtrCts[1] * 12) + "px sans-serif";
+						ctx.fillText(data, dPos[0], dPos[1]);
+						ctx.restore();
+
 					}
 				}
 				cPos = zipAdd(cPos, cStep);
@@ -382,7 +392,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
 ¿|Dump Debug data
 ⊗|End Program
 -
-🞜|Convert to Drawing Command
+•|Convert to Drawing Command
 ⌒|Draw a curve
 ⦚|Change Line Attributes
 ■|Paint Bucket`;
