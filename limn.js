@@ -509,7 +509,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
 	let codeBox = document.getElementById("code");
 	let params = new URLSearchParams(window.location.search);
 	let code = params.get("code") || "";
-	let inp = params.get("input");
+	let inp = params.get("input") || "";
 	codeBox.value = decodeURI(code);
 	document.getElementById("input").value = decodeURI(inp);
 
