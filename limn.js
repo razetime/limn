@@ -13,42 +13,54 @@ const dirs = [[0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, 
 
 const rots = [0, 45, 90, 135, 180, 225, 270, 315];
 
-// Helper function for floodfill
-function getPixel(pixelData, x, y) {
-	if (x < 0 || y < 0 || x >= pixelData.width || y >= pixelData.height) {
-		return -1;  // impossible color
+function getPixel(imageData, x, y) {
+	if (x < 0 || y < 0 || x >= imageData.width || y >= imageData.height) {
+		return [-1, -1, -1, -1];  // impossible color
 	} else {
-		return pixelData.data[y * pixelData.width + x];
+		const offset = (y * imageData.width + x) * 4;
+		return imageData.data.slice(offset, offset + 4);
 	}
 }
 
-// floodfill function taken from Stack Overflow
+function setPixel(imageData, x, y, color) {
+	const offset = (y * imageData.width + x) * 4;
+	imageData.data[offset + 0] = color[0];
+	imageData.data[offset + 1] = color[1];
+	imageData.data[offset + 2] = color[2];
+	imageData.data[offset + 3] = color[0];
+}
+
+function colorsMatch(a, b) {
+	return a[0] === b[0] && a[1] === b[1] && a[2] === b[2] && a[3] === b[3];
+}
+function hexToRGB(hex) {
+
+	const r = parseInt(hex.slice(1, 3), 16);
+	const g = parseInt(hex.slice(3, 5), 16);
+	const b = parseInt(hex.slice(5, 7), 16);
+	const a = parseInt(hex.slice(7, 9), 16);
+
+	return [r, g, b, a];
+
+}
 function floodFill(ctx, x, y, fillColor) {
 	// read the pixels in the canvas
 	const imageData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-	// make a Uint32Array view on the pixels so we can manipulate pixels
-	// one 32bit value at a time instead of as 4 bytes per pixel
-	const pixelData = {
-		width: imageData.width,
-		height: imageData.height,
-		data: new Uint32Array(imageData.data.buffer),
-	};
-
 	// get the color we're filling
-	const targetColor = getPixel(pixelData, x, y);
+	const targetColor = getPixel(imageData, x, y);
 
 	// check we are actually filling a different color
-	if (targetColor !== fillColor) {
+	if (!colorsMatch(targetColor, fillColor)) {
 
 		const pixelsToCheck = [x, y];
 		while (pixelsToCheck.length > 0) {
 			const y = pixelsToCheck.pop();
 			const x = pixelsToCheck.pop();
 
-			const currentColor = getPixel(pixelData, x, y);
-			if (currentColor === targetColor) {
-				pixelData.data[y * pixelData.width + x] = fillColor;
+			const currentColor = getPixel(imageData, x, y);
+			if (colorsMatch(currentColor, targetColor)) {
+				setPixel(imageData, x, y, fillColor);
 				pixelsToCheck.push(x + 1, y);
 				pixelsToCheck.push(x - 1, y);
 				pixelsToCheck.push(x, y + 1);
@@ -90,8 +102,9 @@ function padAllSides(grid, factor) {
 	let max = Math.max(...grid.map(x => x.length));
 	let tb = Array(factor).fill(' '.repeat(max));
 	let lr = ' '.repeat(factor);
+	grid = grid.map(x => x.join());
 	grid = tb.concat(grid).concat(tb);
-	grid = grid.map(x => lr + x + lr);
+	grid = grid.map(x => Array.from(lr + x + lr));
 
 	return grid;
 }
@@ -112,7 +125,7 @@ function parseArrowString(directions) {
 	}
 	for (var i = 1; i < matches.length; i += 2) {
 		matches[i - 1] = Number(matches[i - 1]);
-		matches[i] = dirs['→←↑↓↖↗↘↙'.indexOf(matches[i])];
+		matches[i] = dirs['→↘↓↙←↖↑↗'.indexOf(matches[i])];
 	}
 	return matches;
 }
@@ -165,8 +178,23 @@ function execute(grid) {
 			parsString = true;
 		}
 		else if (ch == '\\' && parsString) { // Standard JS Escape support
-			data += grid[cPos[0] + cStep[0]][cPos[1] + cStep[1]];
-			cPos = zipAdd(cPos, cStep.map(x => 2 * x));
+			let d = grid[cPos[0] + cStep[0]][cPos[1] + cStep[1]];
+			switch (d) {
+				case 'n':
+					data += '\n';
+					break;
+				case 't':
+					data += '\t';
+					break;
+				case 'r':
+					data += '\r';
+					break;
+				default:
+					data += d;
+					break;
+			}
+			cPos = zipAdd(cPos, cStep);
+
 		}
 		else if (ch == '"' && parsString) {
 			parsString = false;
@@ -197,10 +225,14 @@ function execute(grid) {
 				let fac = Math.max(...dirs.flat());
 				let str = "";
 				let phCursor = zipAdd(cPos, [fac, fac]);
-				grid = padAllSides(grid, fac);
 				for (var i = 0; i < dirs.length; i += 2) {
 					let tStep = dirs[i + 1];
 					for (var j = 0; j < Number(dirs[i]); j++) {
+						if (typeof (grid[phCursor[0]] || [])[phCursor[1]] === "undefined") {
+							grid = padAllSides(grid, 1);
+							phCursor = zipAdd(phCursor, [1, 1]);
+							cPos = zipAdd(cPos, [1, 1]);
+						}
 						str += grid[phCursor[0]][phCursor[1]];
 						phCursor = zipAdd(tStep, phCursor);
 					}
@@ -222,25 +254,27 @@ function execute(grid) {
 
 			}
 			if (ch == '⮺') { //TODO
-				console.log("Idk what to do with ⮺ yet");
+				let pos = parseArrowString(stack.pop());
+				let w = stack.pop();
+				let h = stack.pop();
 			}
-			if (ch == '🖉') {
+			if (ch == '✎') {
 				console.log("Drawing");
 				let dirs = parseArrowString(stack.pop());
 				let print = (stack.pop()).toString();
-				console.log(dirs, print);
 				let c = 0;
-				cPos = zipAdd(cPos, cStep);
 				for (var i = 0; i < dirs.length; i += 2) {
 					let tStep = dirs[i + 1];
 					for (var j = 0; j < Number(dirs[i]); j++) {
+						cPos = zipAdd(cPos, tStep);
 						if (typeof (grid[cPos[0]] || [])[cPos[1]] === "undefined") {
 							grid = padAllSides(grid, 1);
+							cPos = zipAdd([1, 1], cPos);
 						}
 						grid[cPos[0]][cPos[1]] = print[c];
 						console.log(cPos, print[c]);
 						c++;
-						cPos = zipAdd(cPos, tStep);
+
 					}
 				}
 			}
@@ -333,15 +367,16 @@ function execute(grid) {
 				if (1 + '→↘↓↙←↖↑↗'.indexOf(cmd)) {
 					dRot = rots['→↘↓↙←↖↑↗'.indexOf(cmd)];
 				}
-				if (cmd == '🖉') {
+				if (cmd == '✎') {
 					let data = stack.pop();
 					if (typeof data == "number") {
+
 						ctx.beginPath();
 						ctx.moveTo(dPos[0], dPos[1]);
 						let rotated = rotate(dPos[0], dPos[1], dPos[0] + data, dPos[1], -dRot);
 						ctx.lineTo(rotated[0], rotated[1]);
-						console.log(rotated, cmd, dRot);
-						dPos = zipAdd(dPos, rotated);
+						// console.log(dPos, rotated, cmd, dRot);
+						dPos = rotated;
 						ctx.stroke();
 					}
 					else {
@@ -354,13 +389,60 @@ function execute(grid) {
 
 					}
 				}
+				if (cmd == '⟳') {
+					dRot += Number(stack.pop());
+				}
+				if (cmd == '⊛') {
+					dRot = Math.floor(Math.random() * 360);
+				}
+				if (cmd == '⮺') {
+					let height = stack.pop();
+					let width = stack.pop();
+					let dirs = parseArrowString(stack.pop());
+					let copyPos = cPos;
+					for (let i = 0; i < dirs.length; i += 2) {
+						copyPos = zipAdd(copyPos, dirs[i + 1].map(x => x * dirs[i]));
+					}
+					stack.push(ctx.getImageData(copyPos[0], copyPos[1], width, height));
+				}
 				cPos = zipAdd(cPos, cStep);
 
 			}
+			if (ch == '⌒') { // need to figure out some math here
+				let rad = parseArrowString(stack.pop());
+				let dist = stack.pop();
+				console.log(rad);
+
+				ctx.beginPath();
+				ctx.moveTo(dPos[0], dPos[1]);
+				let median = dPos;
+				for (let i = 0; i < rad.length; i += 2) {
+					median = zipAdd(median, rad[i + 1].map(x => x * rad[i]));
+				}
+				let rotated = rotate(dPos[0], dPos[1], dPos[0] + dist, dPos[1], -dRot);
+
+				let controlX = 2 * median[0] - dPos[0] / 2 - rotated[0] / 2;
+				let controlY = 2 * median[1] - dPos[1] / 2 - rotated[1] / 2;
+				ctx.quadraticCurveTo(controlX, controlY, rotated[0], rotated[1]);
+				console.log(dPos, rotated);
+				dPos = rotated;
+				ctx.stroke();
+			}
+			if (ch == '⦚') {
+				let style = stack.pop();
+				let color = stack.pop();
+				ctx.font = style;
+				ctx.fillStyle = color;
+				ctx.strokeStyle = color;
+			}
+			if (ch == '■') {
+				let color = stack.pop();
+				floodFill(ctx, dPos[0], dPos[1], hexToRGB(color));
+			}
+
 		}
 
 		cPos = zipAdd(cPos, cStep);
-		console.log(cPos);
 
 	}
 }
@@ -368,34 +450,34 @@ function execute(grid) {
 
 window.addEventListener('DOMContentLoaded', (event) => {
 	// Setup keyboard
-	let charset = `→|Right
-←|Left
-↑|Up
-↓|Down
-↖|UpLeft
-↗|UpRight
-↘|DownRight
-↙|DownLeft
-⟳|Rotate 90/Rotate 45*n
-⊛|Random Direction
-⊡|Execute Arrow String
-⮺|Copy Area
-🖉|Write to Canvas
-꩜|Warp
+	let charset = `→|Right|d
+←|Left|a
+↑|Up|w
+↓|Down|s
+↖|UpLeft|q
+↗|UpRight|e
+↘|DownRight|c
+↙|DownLeft|z
+⟳|Rotate 90/Rotate 45*n|r
+⊛|Random Direction|o
+⊡|Execute Arrow String|x
+⮺|Copy Area|t
+✎|Write to Canvas|i
+꩜|Warp|p
 -
-×|Multiply
-÷|Divide
-≈|Cast to String/Int
-⋒|If/Else
+×|Multiply|-
+÷|Divide|+
+≈|Cast to String/Int|=
+⋒|If/Else|:
 -
-⩫|Get Input
-¿|Dump Debug data
-⊗|End Program
+⩫|Get Input|l
+¿|Dump Debug data|?
+⊗|End Program|\`
 -
-•|Convert to Drawing Command
-⌒|Draw a curve
-⦚|Change Line Attributes
-■|Paint Bucket`;
+•|Convert to Drawing Command|.
+⌒|Draw a curve|u
+⦚|Change Line Attributes|]
+■|Paint Bucket|h`;
 	let kb = document.getElementById("keyboard");
 	let data = charset.split('\n');
 	for (var i = 0; i < data.length; i++) {
@@ -404,7 +486,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
 		}
 		else {
 			let dat = data[i].split("|");
-			kb.innerHTML += "<span class=\"key\" title=\"" + dat[1] + "\">" + dat[0] + "</span>";
+			kb.innerHTML += "<span class=\"key\" title=\"" + dat[1] + "\n` + " + dat[2] + "\">" + dat[0] + "</span>";
 		}
 
 	}
@@ -416,11 +498,46 @@ window.addEventListener('DOMContentLoaded', (event) => {
 			let start = box.selectionStart;
 			let end = box.selectionEnd;
 			box.value = val.slice(0, start) + event.target.innerHTML + val.slice(end);
+			console.log(event.target.innerHTML);
 			box.selectionStart = start + 1;
 			box.selectionEnd = start + 1;
 			box.focus();
 
 		})
+	});
+	let keys = charset.split('\n').filter(x => x != '-').map(x => x.split('|'));
+	let codeBox = document.getElementById("code")
+	codeBox.addEventListener("keypress", function (event) {
+		let fun = function (event) {
+			event.preventDefault();
+			kb.style.background = "none";
+			let trans = keys.map(x => x[2]);
+			let box = document.getElementById("code");
+			let val = box.value;
+			let start = box.selectionStart;
+			let end = box.selectionEnd;
+			if (1 + trans.indexOf(event.key)) {
+				box.value = val.slice(0, start) + keys[trans.indexOf(event.key)][0] + val.slice(end);
+			}
+			else {
+				box.value = val.slice(0, start) + event.key + val.slice(end);
+			}
+			box.selectionStart = start + 1;
+			box.selectionEnd = start + 1;
+			box.focus();
+			codeBox.removeEventListener("keypress", fun);
+		}
+		if (event.key == '`') {
+			event.preventDefault();
+			kb.style.background = "#222";
+
+			codeBox.addEventListener("keypress", fun);
+
+		}
+		else {
+			kb.style.background = "none";
+			codeBox.removeEventListener("keypress", fun);
+		}
 	});
 
 	// Setup canvas

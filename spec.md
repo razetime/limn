@@ -38,7 +38,7 @@ you can use the arrow symbols (`→←↑↓↖↗↘↙`) to set direction.
 
 `⮺` is used for copying. It takes an arrow string, and moves to the place it indicates. Then it takes two integers, m and n, and copies an area of m x n characters to stack as a newline separated string. Ignores direction. (needs more changes and clarification)
 
-`🖉` is the main method for self-modification. It takes a single line string or integer, and prints it in the direction(s) specified by an arrow string. This moves the program cursor.
+`✎` is the main method for self-modification. It takes a single line string or integer, and prints it in the direction(s) specified by an arrow string. This moves the program cursor.
 Eg: "3→4↑" prints 3 characters to the right and 4 characters upward.
 
 `⋒` is a conditional. Continues in the current direction for a truthy value, otherwise turns 90&deg; clockwise.
@@ -69,23 +69,23 @@ The default direction is to the right.
 
 These are commands which operate on the drawing canvas alone.
 
-`⌒` draws an arc from the current point, given distance and radius.
+`⌒` draws an curve from the current point, given distance to the next point, and median point as a direction string.
 
-`⦚` changes line colour and thickness, given a string and an integer. Thickness value also controls text size.
+`⦚` changes line colour and thickness, given two strings. Thickness value also controls text size.
 
-`■` fills a closed area with a specific color, if it is a valid hex string, transparency included(format: `0xXXXXXXYY` where X is color and Y is opacity).
+`■` fills a closed area with a specific color, in a HTML canvas supported string format(rgba, 8 digit hex, color name).
 
 **Modified commands:**
 
 `•` Is the prefix for all the commands in this section. Converts the next command to a drawing command.
 
-`🖉` prints a string or a line of length n, based on it's argument, in the current cursor direction.
+`✎` prints a string or a line of length n, based on it's argument, in the current cursor direction.
 
 `→←↑↓↖↗↘↙` Set direction in the drawing canvas.
 
 `⟳` Takes a single number n and rotates n degrees from the current direction. A more fine tuned way to manipulate angle.
 
-`⊛` sets a random direction in the drawing canvas(1-360).
+`⊛` sets a random direction in the drawing canvas(0-359).
 
 `⮺` copies a region given arrow string, width and height and pushes an Image Object to the stack.
 

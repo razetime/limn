@@ -18,6 +18,8 @@ pre,code,textarea{
 #keyboard {
 	border: 1px solid #fff;
 	margin-bottom: 1.5rem;
+	display: inline-block;
+	padding: 2px 4px 2px 4px;
 }
 
 .spacer {

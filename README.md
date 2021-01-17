@@ -22,5 +22,12 @@ The idea behind limn is to create a self modifying language that can create imag
 
 #### Drawing canvas
 * Text and line drawing
-* Rotation of drawing cursor
 * Setting direction
+* Rotation of drawing cursor
+* Random direction
+* Copying an area
+* Curve drawing
+* Text syle changing
+* stroke style changing
+
+TODO: Making drawing canvas infinite, flood filling without crashing
