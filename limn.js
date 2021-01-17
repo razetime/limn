@@ -506,7 +506,14 @@ window.addEventListener('DOMContentLoaded', (event) => {
 		})
 	});
 	let keys = charset.split('\n').filter(x => x != '-').map(x => x.split('|'));
-	let codeBox = document.getElementById("code")
+	let codeBox = document.getElementById("code");
+	let params = new URLSearchParams(window.location.search);
+	let code = params.get("code") || "";
+	let inp = params.get("input");
+	codeBox.value = decodeURI(code);
+	document.getElementById("input").value = decodeURI(inp);
+
+
 	codeBox.addEventListener("keypress", function (event) {
 		let fun = function (event) {
 			event.preventDefault();
@@ -546,6 +553,14 @@ window.addEventListener('DOMContentLoaded', (event) => {
 	ctx.fillStyle = "#ffffff";
 	ctx.fillText('Output will appear here!', drawCanvas.width / 2, drawCanvas.height / 2);
 
+	document.getElementById("permalink").addEventListener("click", function (e) {
+		let code = document.getElementById("code").value;
+		let input = document.getElementById("input").value;
+		console.log(window.location.href);
+		window.location.href = encodeURI(window.location.href.split('?')[0] + "?code=" + code + "&input=" + input);
+
+
+	});
 
 	document.getElementById("execute").addEventListener("click", function (e) {
 		grid = document.getElementById("code").value.split('\n');
