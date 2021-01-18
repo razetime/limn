@@ -434,6 +434,7 @@ function execute(grid) {
 				ctx.font = style;
 				ctx.fillStyle = color;
 				ctx.strokeStyle = color;
+
 			}
 			if (ch == '■') {
 				let color = stack.pop();
@@ -510,8 +511,8 @@ window.addEventListener('DOMContentLoaded', (event) => {
 	let params = new URLSearchParams(window.location.search);
 	let code = params.get("code") || "";
 	let inp = params.get("input") || "";
-	codeBox.value = decodeURI(code);
-	document.getElementById("input").value = decodeURI(inp);
+	codeBox.value = decodeURIComponent(code);
+	document.getElementById("input").value = decodeURIComponent(inp);
 
 
 	codeBox.addEventListener("keypress", function (event) {
@@ -557,7 +558,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
 		let code = document.getElementById("code").value;
 		let input = document.getElementById("input").value;
 		console.log(window.location.href);
-		window.location.href = encodeURI(window.location.href.split('?')[0] + "?code=" + code + "&input=" + input);
+		window.location.href = encodeURI(window.location.href.split('?')[0] + "?code=" + encodeURIComponent(code) + "&input=" + encodeURIComponent(input));
 
 
 	});
