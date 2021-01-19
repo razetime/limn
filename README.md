@@ -30,4 +30,4 @@ The idea behind limn is to create a self modifying language that can create imag
 * Text syle changing
 * stroke style changing
 
-TODO: Making drawing canvas infinite, flood filling without crashing
+TODO: Making drawing canvas infinite, fix conditionals, flood filling without crashing

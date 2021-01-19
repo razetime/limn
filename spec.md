@@ -69,7 +69,9 @@ The default direction is to the right.
 
 These are commands which operate on the drawing canvas alone.
 
-`⌒` draws an curve from the current point, given distance to the next point, and median point as a direction string.
+`⌇` draws an curve from the current point, given distance to the next point, and median point as a direction string.
+
+`⌒` draws an arc, given radius(in current direction) and end angle.
 
 `⦚` changes line colour and thickness, given two strings. Thickness value also controls text size.
 
@@ -77,7 +79,7 @@ These are commands which operate on the drawing canvas alone.
 
 **Modified commands:**
 
-`•` Is the prefix for all the commands in this section. Converts the next command to a drawing command.
+`•` Toggles drawing mode(Idea from @8dion8 ). if it is on, the following commands will act on the drawing canvas.
 
 `✎` prints a string or a line of length n, based on it's argument, in the current cursor direction.
 

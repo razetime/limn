@@ -78,7 +78,7 @@ function toRadians(angle) {
 }
 
 // from https://stackoverflow.com/questions/17410809/how-to-calculate-rotation-in-2d-in-javascript
-function rotate(cx, cy, x, y, angle) { // drawing canvas rotation
+function cRotate(cx, cy, x, y, angle) { // drawing canvas rotation
 	let radians = (Math.PI / 180) * angle,
 		cos = Math.cos(radians),
 		sin = Math.sin(radians),
@@ -87,7 +87,7 @@ function rotate(cx, cy, x, y, angle) { // drawing canvas rotation
 	return [nx, ny];
 }
 
-function cRotate(x, y, angle) { // code canvas rotation
+function rotate(x, y, angle) { // code canvas rotation
 	let index = -1;
 	for (var i = 0; i < dirs.length; i++) {
 		if (dirs[i][0] == x && dirs[i][1] == y) {
@@ -150,6 +150,7 @@ function execute(grid) {
 	let dPos = [0, 0];  // canvas pointer position
 	let dRot = 0; // pointer rotation in degrees from the positive x axis
 	let dPtrCts = ["#ffffffff", 1];  // canvas pointer color and thickness (in px)
+	let drawing = false;
 
 	ctx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
 	ctx.textAlign = "left";
@@ -204,247 +205,257 @@ function execute(grid) {
 		else if (parsString) {
 			data += ch;
 		}
-		else {
+		else if (!drawing) {
 			if (1 + '→↘↓↙←↖↑↗'.indexOf(ch)) {
 				cStep = dirs['→↘↓↙←↖↑↗'.indexOf(ch)];
 			}
-			if (ch == '⟳') {
-				if (typeof stack[stack.length - 1] === "number") {
-					cStep = cRotate(cStep[0], cStep[1], Math.floor(stack.pop()));
-					console.log(cStep);
-				}
-				else {
-					cStep = cRotate(cStep[0], cStep[1], 2);
-				}
-			}
-			if (ch == '⊛') {
-				cStep = dirs[Math.floor(Math.random() * dirs.length)];
-			}
-			if (ch == '⊡') {
-				let dirs = parseArrowString(stack.pop());
-				let fac = Math.max(...dirs.flat());
-				let str = "";
-				let phCursor = zipAdd(cPos, [fac, fac]);
-				for (var i = 0; i < dirs.length; i += 2) {
-					let tStep = dirs[i + 1];
-					for (var j = 0; j < Number(dirs[i]); j++) {
-						if (typeof (grid[phCursor[0]] || [])[phCursor[1]] === "undefined") {
-							grid = padAllSides(grid, 1);
-							phCursor = zipAdd(phCursor, [1, 1]);
-							cPos = zipAdd(cPos, [1, 1]);
+			else {
+				switch (ch) {
+					case '⟳':
+						if (typeof stack[stack.length - 1] === "number") {
+							cStep = rotate(cStep[0], cStep[1], Math.floor(stack.pop()));
+							console.log(cStep);
 						}
-						str += grid[phCursor[0]][phCursor[1]];
-						phCursor = zipAdd(tStep, phCursor);
-					}
-				}
-
-				//get the data, and add to stack
-				let regex = /(\d+|"\D+")/g
-				let match = regex.exec(str);
-				let matches = [];
-				while (match != null) {
-					// matched text: match[0]
-					// match start: match.index
-					// capturing group n: match[n]
-					matches.push(match[0]);
-					match = regex.exec(str);
-				}
-				console.log(str, matches);
-				stack = stack.concat(matches);
-
-			}
-			if (ch == '⮺') { //TODO
-				let pos = parseArrowString(stack.pop());
-				let w = stack.pop();
-				let h = stack.pop();
-			}
-			if (ch == '✎') {
-				console.log("Drawing");
-				let dirs = parseArrowString(stack.pop());
-				let print = (stack.pop()).toString();
-				let c = 0;
-				for (var i = 0; i < dirs.length; i += 2) {
-					let tStep = dirs[i + 1];
-					for (var j = 0; j < Number(dirs[i]); j++) {
-						cPos = zipAdd(cPos, tStep);
-						if (typeof (grid[cPos[0]] || [])[cPos[1]] === "undefined") {
-							grid = padAllSides(grid, 1);
-							cPos = zipAdd([1, 1], cPos);
+						else {
+							cStep = rotate(cStep[0], cStep[1], 2);
 						}
-						grid[cPos[0]][cPos[1]] = print[c];
-						console.log(cPos, print[c]);
-						c++;
-
-					}
-				}
-			}
-			if (ch == '⋒') {
-				let bool = stack.pop();
-				if (!bool) {
-					cStep = rotate(cStep, 90);
-				}
-			}
-			if (ch == '꩜') {
-				let warpCoords = [];
-				for (var i = 0; i < grid.length; i++) {
-					for (var j = 0; j < grid[i].length; j++) {
-						if (grid[i][j] == '꩜' && i != cPos[0] && j != cPos[1]) {
-							warpCoords.push([i, j]);
+						break;
+					case '⊛':
+						cStep = dirs[Math.floor(Math.random() * dirs.length)];
+						break;
+					case '⊡':
+						let dir = parseArrowString(stack.pop());
+						let fac = Math.max(...dir.flat());
+						let str = "";
+						let phCursor = zipAdd(cPos, [fac, fac]);
+						let tmPos = cPos;
+						for (var i = 0; i < dir.length; i += 2) {
+							let tStep = dir[i + 1];
+							for (var j = 0; j < Number(dir[i]); j++) {
+								if (typeof (grid[phCursor[0]] || [])[phCursor[1]] === "undefined") {
+									grid = padAllSides(grid, 1);
+									phCursor = zipAdd(phCursor, [1, 1]);
+									tmPos = zipAdd(tmPos, [1, 1]);
+								}
+								str += grid[phCursor[0]][phCursor[1]];
+								phCursor = zipAdd(tStep, phCursor);
+							}
 						}
-					}
-				}
-				console.log(warpCoords)
-				let t = cPos;
-				cPos = zipAdd(cPos, cStep);
-				if (warpCoords.length == 0) {
-					cPos = [0, 0];
-				}
-				else if (1 + '→←↑↓↖↗↘↙'.indexOf(grid[cPos[0]][cPos[1]])) {
-					spStep = dirs['→←↑↓↖↗↘↙'.indexOf(grid[cPos[0]][cPos[1]])];
-					while (grid[cPos[0]][cPos[1]] != '꩜') {
-						cPos = zipAdd(cPos, spStep);
-					}
-				}
-				else {
-					let ncPos = t.map(x => -x);
-					let dists = warpCoords.map(y => (zipAdd(y, ncPos)).reduce((a, b) => a + b, 0));
-					cPos = warpCoords[dists.indexOf(Math.max(...dists))];
-				}
 
-			}
-			if (ch == '≈') {
-				let top = stack.pop();
-				if (typeof top === "number") {
-					stack.push(String(top));
-				}
-				else {
-					stack.push(Number(top));
-				}
-			}
-			if (ch == '+') {
-				let b = stack.pop();
-				let a = stack.pop();
-				stack.push(a + b);
-			}
-			if (ch == '-') {
-				let b = stack.pop();
-				let a = stack.pop();
-				stack.push(a - b);
-			}
-			if (ch == '×') {
-				let b = stack.pop();
-				let a = stack.pop();
-				let tb = typeof b;
-				let ta = typeof a;
-				if (tb == "number" && ta == "number") {
-					stack.push(a * b);
-				}
-				else if (tb == "number" && ta == "string") {
-					stack.push(a.repeat(b));
-				}
-				else if (ta == "number" && tb == "string") {
-					stack.push(b.repeat(a));
-				}
-			}
-			if (ch == '÷') {
-				let b = stack.pop();
-				let a = stack.pop();
-				stack.push(a / b);
-			}
-			if (ch == '¿') { // Debug stats
-				debug.innerHTML += "<b>Position:</b> " + String(cPos) + "\n\n";
-				debug.innerHTML += "Grid:\n";
-				console.log(grid.map(x => x.join('')).join("\n"));
-				debug.innerHTML += grid.map(x => x.join('')).join("\n");
-				debug.innerHTML += "\n\nStack:\n";
-				debug.innerHTML += JSON.stringify(stack) + "\n\n";
-			}
-			if (ch == '⩫') {
-				stack.push(input.shift());
-			}
-			if (ch == '•') {
-				let cmd = grid[cPos[0] + cStep[0]][cPos[1] + cStep[1]];
-				if (1 + '→↘↓↙←↖↑↗'.indexOf(cmd)) {
-					dRot = rots['→↘↓↙←↖↑↗'.indexOf(cmd)];
-				}
-				if (cmd == '✎') {
-					let data = stack.pop();
-					if (typeof data == "number") {
+						//get the data, and add to stack
+						let regex = /(\d+|"\D+")/g
+						let match = regex.exec(str);
+						let matches = [];
+						while (match != null) {
+							// matched text: match[0]
+							// match start: match.index
+							// capturing group n: match[n]
+							matches.push(match[0]);
+							match = regex.exec(str);
+						}
+						console.log(str, matches);
+						stack = stack.concat(matches);
+						break;
+					case '⮺':
+						let pos = parseArrowString(stack.pop());
+						let w = stack.pop();
+						let h = stack.pop();
+						break;
+					case '✎':
+						let dira = parseArrowString(stack.pop());
+						let print = (stack.pop()).toString();
+						let c = 0;
+						for (var i = 0; i < dira.length; i += 2) {
+							let tStep = dira[i + 1];
+							for (var j = 0; j < Number(dira[i]); j++) {
+								cPos = zipAdd(cPos, tStep);
+								if (typeof (grid[cPos[0]] || [])[cPos[1]] === "undefined") {
+									grid = padAllSides(grid, 1);
+									cPos = zipAdd([1, 1], cPos);
+								}
+								grid[cPos[0]][cPos[1]] = print[c];
+								console.log(cPos, print[c]);
+								c++;
+
+							}
+						}
+						break;
+					case '⋒':
+						let bool = stack.pop();
+						if (!bool) {
+							cStep = rotate(cStep, 90);
+						}
+						break;
+					case '꩜':
+						let warpCoords = [];
+						for (var i = 0; i < grid.length; i++) {
+							for (var j = 0; j < grid[i].length; j++) {
+								if (grid[i][j] == '꩜' && i != cPos[0] && j != cPos[1]) {
+									warpCoords.push([i, j]);
+								}
+							}
+						}
+						console.log(warpCoords)
+						let t = cPos;
+						cPos = zipAdd(cPos, cStep);
+						if (warpCoords.length == 0) {
+							cPos = [0, 0];
+						}
+						else if (1 + '→←↑↓↖↗↘↙'.indexOf(grid[cPos[0]][cPos[1]])) {
+							spStep = dirs['→←↑↓↖↗↘↙'.indexOf(grid[cPos[0]][cPos[1]])];
+							while (grid[cPos[0]][cPos[1]] != '꩜') {
+								cPos = zipAdd(cPos, spStep);
+							}
+						}
+						else {
+							let ncPos = t.map(x => -x);
+							let dists = warpCoords.map(y => (zipAdd(y, ncPos)).reduce((a, b) => a + b, 0));
+							cPos = warpCoords[dists.indexOf(Math.max(...dists))];
+						}
+						break;
+					case '≈':
+						let top = stack.pop();
+						if (typeof top === "number") {
+							stack.push(String(top));
+						}
+						else {
+							stack.push(Number(top));
+						}
+						break;
+					case '+':
+						let b = stack.pop();
+						let a = stack.pop();
+						stack.push(a + b);
+						break;
+					case '-':
+						let d = stack.pop();
+						let x = stack.pop();
+						stack.push(x - d);
+						break;
+					case '×':
+						let f = stack.pop();
+						let e = stack.pop();
+						let tb = typeof f;
+						let ta = typeof e;
+						if (tb == "number" && ta == "number") {
+							stack.push(e * f);
+						}
+						else if (tb == "number" && ta == "string") {
+							stack.push(e.repeat(f));
+						}
+						else if (ta == "number" && tb == "string") {
+							stack.push(f.repeat(e));
+						}
+						break;
+					case '÷':
+						let dd = stack.pop();
+						let dv = stack.pop();
+						stack.push(dv / dd);
+						break;
+					case '¿':
+						debug.innerHTML += "<b>Position:</b> " + String(cPos) + "\n\n";
+						debug.innerHTML += "Grid:\n";
+						console.log(grid.map(x => x.join('')).join("\n"));
+						debug.innerHTML += grid.map(x => x.join('')).join("\n");
+						debug.innerHTML += "\n\nStack:\n";
+						debug.innerHTML += JSON.stringify(stack) + "\n\n";
+						break;
+					case '⩫':
+						stack.push(input.shift());
+						break;
+					case '⌇': //curve
+						let rad = parseArrowString(stack.pop());
+						let dist = stack.pop();
 
 						ctx.beginPath();
 						ctx.moveTo(dPos[0], dPos[1]);
-						let rotated = rotate(dPos[0], dPos[1], dPos[0] + data, dPos[1], -dRot);
-						ctx.lineTo(rotated[0], rotated[1]);
-						// console.log(dPos, rotated, cmd, dRot);
+						let median = dPos;
+						for (let i = 0; i < rad.length; i += 2) {
+							median = zipAdd(median, rad[i + 1].map(x => x * rad[i]));
+						}
+						let rotated = cRotate(dPos[0], dPos[1], dPos[0] + dist, dPos[1], -dRot);
+
+						let controlX = 2 * median[0] - dPos[0] / 2 - rotated[0] / 2;
+						let controlY = 2 * median[1] - dPos[1] / 2 - rotated[1] / 2;
+						ctx.quadraticCurveTo(controlX, controlY, rotated[0], rotated[1]);
+						console.log(dPos, rotated);
 						dPos = rotated;
 						ctx.stroke();
-					}
-					else {
-						ctx.save();
-						ctx.translate(dPos[0], dPos[1]);
-						ctx.rotate(dRot);
-						ctx.font = (dPtrCts[1] * 12) + "px sans-serif";
-						ctx.fillText(data, dPos[0], dPos[1]);
-						ctx.restore();
-
-					}
+						break;
+					case '⌒': //TODO: curve
+						break;
+					case '⦚':
+						let style = stack.pop();
+						let color = stack.pop();
+						ctx.font = style;
+						ctx.fillStyle = color;
+						ctx.strokeStyle = color;
+						break;
+					case '■': //freezes the browser for some reason
+						let colr = stack.pop();
+						floodFill(ctx, dPos[0], dPos[1], hexToRGB(colr));
+					case '•':
+						drawing = true;
+						console.log("drawing");
+						break;
 				}
-				if (cmd == '⟳') {
-					dRot += Number(stack.pop());
-				}
-				if (cmd == '⊛') {
-					dRot = Math.floor(Math.random() * 360);
-				}
-				if (cmd == '⮺') {
-					let height = stack.pop();
-					let width = stack.pop();
-					let dirs = parseArrowString(stack.pop());
-					let copyPos = cPos;
-					for (let i = 0; i < dirs.length; i += 2) {
-						copyPos = zipAdd(copyPos, dirs[i + 1].map(x => x * dirs[i]));
-					}
-					stack.push(ctx.getImageData(copyPos[0], copyPos[1], width, height));
-				}
-				cPos = zipAdd(cPos, cStep);
-
-			}
-			if (ch == '⌒') { // need to figure out some math here
-				let rad = parseArrowString(stack.pop());
-				let dist = stack.pop();
-				console.log(rad);
-
-				ctx.beginPath();
-				ctx.moveTo(dPos[0], dPos[1]);
-				let median = dPos;
-				for (let i = 0; i < rad.length; i += 2) {
-					median = zipAdd(median, rad[i + 1].map(x => x * rad[i]));
-				}
-				let rotated = rotate(dPos[0], dPos[1], dPos[0] + dist, dPos[1], -dRot);
-
-				let controlX = 2 * median[0] - dPos[0] / 2 - rotated[0] / 2;
-				let controlY = 2 * median[1] - dPos[1] / 2 - rotated[1] / 2;
-				ctx.quadraticCurveTo(controlX, controlY, rotated[0], rotated[1]);
-				console.log(dPos, rotated);
-				dPos = rotated;
-				ctx.stroke();
-			}
-			if (ch == '⦚') {
-				let style = stack.pop();
-				let color = stack.pop();
-				ctx.font = style;
-				ctx.fillStyle = color;
-				ctx.strokeStyle = color;
-
-			}
-			if (ch == '■') {
-				let color = stack.pop();
-				floodFill(ctx, dPos[0], dPos[1], hexToRGB(color));
 			}
 
 		}
+		else if (drawing) {
+			if (1 + '→↘↓↙←↖↑↗'.indexOf(ch)) {
+				dRot = rots['→↘↓↙←↖↑↗'.indexOf(ch)];
+			}
+			else {
+				switch (ch) {
+					case '•':
+						drawing = false;
+						console.log("Leaving drawing");
+						break;
+					case '✎':
+						let data = stack.pop();
+						if (typeof data == "number") {
 
+							ctx.beginPath();
+							ctx.moveTo(dPos[0], dPos[1]);
+							let rotated = cRotate(dPos[0], dPos[1], dPos[0] + data, dPos[1], -dRot);
+							ctx.lineTo(rotated[0], rotated[1]);
+							// console.log(dPos, rotated, cmd, dRot);
+							dPos = rotated;
+							ctx.stroke();
+						}
+						else {
+							ctx.save();
+							ctx.translate(dPos[0], dPos[1]);
+							ctx.rotate(dRot);
+							ctx.font = (dPtrCts[1] * 12) + "px sans-serif";
+							ctx.fillText(data, dPos[0], dPos[1]);
+							ctx.restore();
+						}
+						break;
+					case '⟳':
+						dRot += Number(stack.pop());
+						break;
+					case '⊛':
+						dRot = Math.floor(Math.random() * 360);
+						break;
+					case '⮺':
+						let height = stack.pop();
+						let width = stack.pop();
+						let dirc = parseArrowString(stack.pop());
+						let copyPos = cPos;
+						for (let i = 0; i < dirc.length; i += 2) {
+							copyPos = zipAdd(copyPos, dirc[i + 1].map(x => x * dirc[i]));
+						}
+						stack.push(ctx.getImageData(copyPos[0], copyPos[1], width, height));
+						break;
+
+				}
+			}
+
+		}
 		cPos = zipAdd(cPos, cStep);
-
+		console.log(drawing, cStep);
 	}
 }
 
@@ -476,7 +487,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
 ⊗|End Program|\`
 -
 •|Convert to Drawing Command|.
-⌒|Draw a curve|u
+⌇|Draw a curve|u
 ⦚|Change Line Attributes|]
 ■|Paint Bucket|h`;
 	let kb = document.getElementById("keyboard");
