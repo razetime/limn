@@ -100,12 +100,11 @@ function rotate(x, y, angle) { // code canvas rotation
 
 function padAllSides(grid, factor) {
 	let max = Math.max(...grid.map(x => x.length));
-	let tb = Array(factor).fill(' '.repeat(max));
+	let tb = [' '.repeat(max)];
 	let lr = ' '.repeat(factor);
-	grid = grid.map(x => x.join());
+	grid = grid.map(x => x.join(''));
 	grid = tb.concat(grid).concat(tb);
 	grid = grid.map(x => Array.from(lr + x + lr));
-
 	return grid;
 }
 
@@ -155,7 +154,7 @@ function execute(grid) {
 	ctx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
 	ctx.textAlign = "left";
 
-	while (grid[cPos[0]][cPos[1]] != '⊗') {
+	while (grid[cPos[0]][cPos[1]] != '⊗' || Math.max(...cPos) > 100) {
 		let ch = grid[cPos[0]][cPos[1]];
 
 		//Taking in data
@@ -225,36 +224,39 @@ function execute(grid) {
 						break;
 					case '⊡':
 						let dir = parseArrowString(stack.pop());
-						let fac = Math.max(...dir.flat());
+						let eva = stack.pop();
 						let str = "";
-						let phCursor = zipAdd(cPos, [fac, fac]);
 						let tmPos = cPos;
 						for (var i = 0; i < dir.length; i += 2) {
 							let tStep = dir[i + 1];
 							for (var j = 0; j < Number(dir[i]); j++) {
-								if (typeof (grid[phCursor[0]] || [])[phCursor[1]] === "undefined") {
+								tmPos = zipAdd(tStep, tmPos);
+								if (typeof (grid[tmPos[0]] || [])[tmPos[1]] === "undefined") {
 									grid = padAllSides(grid, 1);
-									phCursor = zipAdd(phCursor, [1, 1]);
 									tmPos = zipAdd(tmPos, [1, 1]);
 								}
-								str += grid[phCursor[0]][phCursor[1]];
-								phCursor = zipAdd(tStep, phCursor);
+								str += grid[tmPos[0]][tmPos[1]];
+
 							}
 						}
-
-						//get the data, and add to stack
-						let regex = /(\d+|"\D+")/g
-						let match = regex.exec(str);
-						let matches = [];
-						while (match != null) {
-							// matched text: match[0]
-							// match start: match.index
-							// capturing group n: match[n]
-							matches.push(match[0]);
-							match = regex.exec(str);
+						if (eva) {
+							//get the data, and add to stack
+							let regex = /(\d+|"\D+")/g
+							let match = regex.exec(str);
+							let matches = [];
+							while (match != null) {
+								// matched text: match[0]
+								// match start: match.index
+								// capturing group n: match[n]
+								matches.push(eval(match[0]));
+								match = regex.exec(str);
+							}
+							console.log(str, matches);
+							stack = stack.concat(matches);
+						} else {
+							stack.push(str);
 						}
-						console.log(str, matches);
-						stack = stack.concat(matches);
+						console.log(str)
 						break;
 					case '⮺':
 						let pos = parseArrowString(stack.pop());
@@ -262,6 +264,7 @@ function execute(grid) {
 						let h = stack.pop();
 						break;
 					case '✎':
+
 						let dira = parseArrowString(stack.pop());
 						let print = (stack.pop()).toString();
 						let c = 0;
@@ -273,12 +276,15 @@ function execute(grid) {
 									grid = padAllSides(grid, 1);
 									cPos = zipAdd([1, 1], cPos);
 								}
-								grid[cPos[0]][cPos[1]] = print[c];
-								console.log(cPos, print[c]);
-								c++;
+								if (print[c]) {
+									grid[cPos[0]][cPos[1]] = print[c];
+									// console.log(cPos, print[c]);
+									c++;
+								}
 
 							}
 						}
+						console.log(grid.toString());
 						break;
 					case '⋒':
 						let bool = stack.pop();
@@ -455,7 +461,6 @@ function execute(grid) {
 
 		}
 		cPos = zipAdd(cPos, cStep);
-		console.log(drawing, cStep);
 	}
 }
 
@@ -488,6 +493,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
 -
 •|Convert to Drawing Command|.
 ⌇|Draw a curve|u
+⌒|Draw an arc|0
 ⦚|Change Line Attributes|]
 ■|Paint Bucket|h`;
 	let kb = document.getElementById("keyboard");
