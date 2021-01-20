@@ -34,7 +34,10 @@ you can use the arrow symbols (`→←↑↓↖↗↘↙`) to set direction.
 
 `⊛` sets a random direction(1-8).
 
-`⊡` is used to retrieve data. It takes an arrow string and retrieves the data traced by its path. The program cursor is not moved. All commands are ignored, and only strings/integers are parsed.
+`⊡` is used to retrieve data. It takes a boolean and an arrow string. It takes the arrow string and retrieves the data traced by its path. The program cursor is not moved.
+Once the data is retrieved:
+* If the boolean is true, All commands are ignored, and only strings/integers are parsed. All data parsed is pushed to stack.
+* Otherwise, the data is pushed directly to stack, as a string.
 
 `⮺` is used for copying. It takes an arrow string, and moves to the place it indicates. Then it takes two integers, m and n, and copies an area of m x n characters to stack as a newline separated string. Ignores direction. (needs more changes and clarification)
 
