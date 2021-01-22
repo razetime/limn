@@ -95,7 +95,7 @@ function rotate(x, y, angle) { // code canvas rotation
 			break;
 		}
 	}
-	return dirs[(index + angle) % 8];
+	return dirs[(index + Math.floor(angle/45))%8];
 }
 
 function padAllSides(grid, factor) {
@@ -290,7 +290,7 @@ function execute(grid) {
 					case '⋒':
 						let bool = stack.pop();
 						if (!bool) {
-							cStep = rotate(cStep, 90);
+							cStep = rotate(cStep[0], cStep[1], 90);
 						}
 						break;
 					case '꩜':
