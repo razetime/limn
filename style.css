@@ -10,7 +10,7 @@ body {
 	margin-top:10px;
 }
 
-pre,code,textarea{
+pre,code,textarea,#max-ops{
 	font-family: "DejaVu Sans Mono", monospace;
 	color: #d3d7cf;
 }
