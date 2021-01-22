@@ -338,6 +338,11 @@ function execute(grid) {
 						let x = stack.pop();
 						stack.push(x - d);
 						break;
+					case '%':
+						let p = stack.pop();
+						let q = stack.pop();
+						stack.push(q % p);
+						break;
 					case '×':
 						let f = stack.pop();
 						let e = stack.pop();
