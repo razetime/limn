@@ -95,7 +95,7 @@ function rotate(x, y, angle) { // code canvas rotation
 			break;
 		}
 	}
-	return dirs[(index + angle) % 8];
+	return dirs[(index + Math.floor(angle/45))%8];
 }
 
 function padAllSides(grid, factor) {
@@ -143,7 +143,8 @@ function execute(grid) {
 	let debug = document.getElementById("console");
 	debug.innerHTML = "";
 	let input = document.getElementById("input").value.split("\n");
-
+	let max_ops = parseInt(document.getElementById("max-ops").value);
+	let completed_ops = 0;
 	// Drawing Canvas variables:
 
 	let dPos = [0, 0];  // canvas pointer position
@@ -156,7 +157,7 @@ function execute(grid) {
 
 	while (grid[cPos[0]][cPos[1]] != '⊗' || Math.max(...cPos) > 100) {
 		let ch = grid[cPos[0]][cPos[1]];
-
+		completed_ops += 1;
 		//Taking in data
 		if (ch >= '0' && ch <= '9' && !parsInt && !parsString) {
 			data += ch;
@@ -289,7 +290,7 @@ function execute(grid) {
 					case '⋒':
 						let bool = stack.pop();
 						if (!bool) {
-							cStep = rotate(cStep, 90);
+							cStep = rotate(cStep[0], cStep[1], 90);
 						}
 						break;
 					case '꩜':
@@ -466,6 +467,9 @@ function execute(grid) {
 
 		}
 		cPos = zipAdd(cPos, cStep);
+		if (completed_ops > max_ops) {
+			return;
+		}
 	}
 }
 
