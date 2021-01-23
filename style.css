@@ -11,7 +11,7 @@ body {
 }
 
 pre,code,textarea,#max-ops{
-	font-family: "DejaVu Sans Mono", monospace;
+	font-family: "dejavu_sans_monobook", monospace;
 	color: #d3d7cf;
 }
 
@@ -28,7 +28,7 @@ pre,code,textarea,#max-ops{
 
 .key {
 	padding: 2px;
-	font-family: "DejaVu Sans Mono", monospace;
+	font-family: "dejavu_sans_monobook", monospace;
 }
 .key:hover {
 	background-color: #222;
