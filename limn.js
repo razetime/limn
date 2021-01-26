@@ -259,9 +259,23 @@ function execute(grid) {
 						console.log(str)
 						break;
 					case '⮺':
-						let pos = parseArrowString(stack.pop());
 						let w = stack.pop();
 						let h = stack.pop();
+						let cp = zipAdd(cPos, cStep);
+						let copy = new Array(h).fill(null).map(() => new Array(w).fill(null));
+						console.log(copy);
+						for (let i = cp[0]; i < cp[0] + h; i++) {
+							for (let j = cp[1]; j < cp[1] + w; j++) {
+								if (typeof (grid[i] || [])[j] === "undefined") {
+									grid = padAllSides(grid, 1);
+									cPos = zipAdd([1, 1], cPos);
+									cp = zipAdd([1, 1], cp);
+								}
+								console.log(i, j);
+								copy[i - cp[0]][j - cp[1]] = grid[i][j];
+							}
+						}
+						stack.push(copy.map(row => row.join("")).join("\n"));
 						break;
 					case '✎':
 
@@ -393,9 +407,9 @@ function execute(grid) {
 						dPos = rotated;
 						ctx.stroke();
 						break;
-					case '⌒': //TODO: curve
+					case '⌒': //TODO: arc
 						break;
-					case '⦚':
+					case '⸗':
 						let style = stack.pop();
 						let color = stack.pop();
 						ctx.font = style;
@@ -502,7 +516,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
 •|Convert to Drawing Command|.
 ⌇|Draw a curve|u
 ⌒|Draw an arc|0
-⦚|Change Line Attributes|]
+⸗|Change Line Attributes|]
 ■|Paint Bucket|h`;
 	let kb = document.getElementById("keyboard");
 	let data = charset.split('\n');

@@ -18,6 +18,7 @@ The idea behind limn is to create a self modifying language that can create imag
 * Typecasting
 * Arithmetic ops
 * Taking Input
+* Copying a Rectangular Area
 
 
 #### Drawing canvas
@@ -30,4 +31,9 @@ The idea behind limn is to create a self modifying language that can create imag
 * Text syle changing
 * stroke style changing
 
-TODO: Making drawing canvas infinite, fix conditionals, flood filling without crashing
+TODO: flood filling without crashing, infinite drawing canvas
+
+## Credits
+ - CyanidesDuality (helped with original idea)
+ - @kspalaiologos for proofreading older interpreter code
+ - @8dion8 for helping fix the interpreter and design suggestions
