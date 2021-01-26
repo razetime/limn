@@ -72,11 +72,11 @@ The default direction is to the right.
 
 These are commands which operate on the drawing canvas alone.
 
-`⌇` draws an curve from the current point, given distance to the next point, and median point as a direction string.
+`⌒` draws an curve from the current point, given distance to the next point, and median point as a direction string.
 
-`⌒` draws an arc, given radius(in current direction) and end angle.
+`○` draws an arc, given radius(in current direction) and end angle.
 
-`⦚` changes line colour and thickness, given two strings. Thickness value also controls text size.
+`⸗` changes line colour and thickness, given two strings. Thickness value also controls text size.
 
 `■` fills a closed area with a specific color, in a HTML canvas supported string format(rgba, 8 digit hex, color name).
 

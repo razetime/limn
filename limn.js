@@ -388,7 +388,7 @@ function execute(grid) {
 					case '⩫':
 						stack.push(input.shift());
 						break;
-					case '⌇': //curve
+					case '⌒': //curve
 						let rad = parseArrowString(stack.pop());
 						let dist = stack.pop();
 
@@ -407,7 +407,14 @@ function execute(grid) {
 						dPos = rotated;
 						ctx.stroke();
 						break;
-					case '⌒': //TODO: arc
+					case '○':
+						let radiuss = stack.pop();
+						let anglee = stack.pop();
+						ctx.beginPath();
+						ctx.moveTo(dPos[0], dPos[1]);
+						let rota = cRotate(dPos[0], dPos[1], dPos[0] + data, dPos[1], -dRot);
+						ctx.arc(rota[0], rota[1], radiuss, toRadians(dRot), toRadians(anglee));
+						ctx.stroke();
 						break;
 					case '⸗':
 						let style = stack.pop();
@@ -445,7 +452,6 @@ function execute(grid) {
 							ctx.moveTo(dPos[0], dPos[1]);
 							let rotated = cRotate(dPos[0], dPos[1], dPos[0] + data, dPos[1], -dRot);
 							ctx.lineTo(rotated[0], rotated[1]);
-							// console.log(dPos, rotated, cmd, dRot);
 							dPos = rotated;
 							ctx.stroke();
 						}
@@ -513,9 +519,9 @@ window.addEventListener('DOMContentLoaded', (event) => {
 ¿|Dump Debug data|?
 ⊗|End Program|\`
 -
-•|Convert to Drawing Command|.
-⌇|Draw a curve|u
-⌒|Draw an arc|0
+•|Enter Drawing Mode|.
+⌒|Draw a curve|u
+○|Draw an arc|0
 ⸗|Change Line Attributes|]
 ■|Paint Bucket|h`;
 	let kb = document.getElementById("keyboard");
@@ -538,7 +544,6 @@ window.addEventListener('DOMContentLoaded', (event) => {
 			let start = box.selectionStart;
 			let end = box.selectionEnd;
 			box.value = val.slice(0, start) + event.target.innerHTML + val.slice(end);
-			console.log(event.target.innerHTML);
 			box.selectionStart = start + 1;
 			box.selectionEnd = start + 1;
 			box.focus();
@@ -596,19 +601,14 @@ window.addEventListener('DOMContentLoaded', (event) => {
 	document.getElementById("permalink").addEventListener("click", function (e) {
 		let code = document.getElementById("code").value;
 		let input = document.getElementById("input").value;
-		console.log(window.location.href);
 		window.location.href = encodeURI(window.location.href.split('?')[0] + "?code=" + encodeURIComponent(code) + "&input=" + encodeURIComponent(input));
-
-
 	});
 
 	document.getElementById("execute").addEventListener("click", function (e) {
 		grid = document.getElementById("code").value.split('\n');
 		let max = Math.max(...grid.map(x => x.length));
 		grid = grid.map(x => Array.from(x.padEnd(max)));
-		console.log(grid);
 		execute(grid);
-
 	});
 });
 
