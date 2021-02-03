@@ -34,10 +34,9 @@ The idea behind limn is to create a self modifying language that can create imag
 #### TODO: 
 * flood filling without crashing 
 * infinite drawing canvas
-* Improve permalink compression
 * prevent permalinking from reloading the page
 * fix text sizing
-* choosing a good monospaced symbol for curve command
+* drawing copied areas
 
 ## Credits
  - CyanidesDuality (helped with original idea)

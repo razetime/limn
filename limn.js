@@ -408,12 +408,17 @@ function execute(grid) {
 						ctx.stroke();
 						break;
 					case '○':
-						let radiuss = stack.pop();
+						let radiuss = 2 * stack.pop();
 						let anglee = stack.pop();
+
+
+						let rota = cRotate(dPos[0], dPos[1], dPos[0] + radiuss, dPos[1], -dRot);
+						ctx.moveTo(rota[0], rota[1]);
 						ctx.beginPath();
-						ctx.moveTo(dPos[0], dPos[1]);
-						let rota = cRotate(dPos[0], dPos[1], dPos[0] + data, dPos[1], -dRot);
-						ctx.arc(rota[0], rota[1], radiuss, toRadians(dRot), toRadians(anglee));
+						console.log(rota, anglee);
+						// ctx.fillRect(rota[0], rota[1], 5, 5);
+						// ctx.fillRect(dPos[0], dPos[1], 5, 5);
+						ctx.arc(rota[0], rota[1], radiuss, toRadians(180 + dRot), toRadians(360 - 180 + dRot - anglee));
 						ctx.stroke();
 						break;
 					case '⸗':
