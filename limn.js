@@ -98,6 +98,10 @@ function rotate(x, y, angle) { // code canvas rotation
 	return dirs[(index + Math.floor(angle / 45)) % 8];
 }
 
+function getPoint(c1,c2,radius,angle){
+    return [c1+Math.cos(angle)*radius,c2+Math.sin(angle)*radius];
+}
+
 function padAllSides(grid, factor) {
 	let max = Math.max(...grid.map(x => x.length));
 	let tb = [' '.repeat(max)];
@@ -278,7 +282,6 @@ function execute(grid) {
 						stack.push(copy.map(row => row.join("")).join("\n"));
 						break;
 					case '✎':
-
 						let dira = parseArrowString(stack.pop());
 						let print = (stack.pop()).toString();
 						let c = 0;
@@ -410,8 +413,6 @@ function execute(grid) {
 					case '○':
 						let radiuss = 2 * stack.pop();
 						let anglee = stack.pop();
-
-
 						let rota = cRotate(dPos[0], dPos[1], dPos[0] + radiuss, dPos[1], -dRot);
 						ctx.moveTo(rota[0], rota[1]);
 						ctx.beginPath();
@@ -420,6 +421,7 @@ function execute(grid) {
 						// ctx.fillRect(dPos[0], dPos[1], 5, 5);
 						ctx.arc(rota[0], rota[1], radiuss, toRadians(180 + dRot), toRadians(360 - 180 + dRot - anglee));
 						ctx.stroke();
+						dPos = getPoint(rota[0], rota[1], radiuss, toRadians(360 - 180 + dRot - anglee));
 						break;
 					case '⸗':
 						let style = stack.pop();
