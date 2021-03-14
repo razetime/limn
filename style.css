@@ -1,54 +1,60 @@
 body {
-	font-family: 'Space Mono', monospace;
+    font-family: 'Space Mono', monospace;
 }
+
 .center {
-	text-align: center;
+    text-align: center;
 }
 
 
 #execute {
-	margin-top:10px;
+    margin-top: 10px;
 }
 
-pre,code,textarea,#max-ops{
-	font-family: "dejavu_sans_monobook", monospace;
-	color: #d3d7cf;
+pre,
+code,
+textarea,
+#max-ops {
+    font-family: "DejaVu Sans Mono", monospace;
+    color: #d3d7cf;
 }
 
 #keyboard {
-	border: 1px solid #fff;
-	margin-bottom: 1.5rem;
-	display: inline-block;
-	padding: 2px 4px 2px 4px;
+    border: 1px solid #fff;
+    margin-bottom: 1.5rem;
+    display: inline-block;
+    padding: 2px 4px 2px 4px;
 }
 
 .spacer {
-	margin:5px;
+    margin: 5px;
 }
 
 .key {
-	padding: 2px;
-	font-family: "dejavu_sans_monobook", monospace;
+    padding: 2px;
+    font-family: "DejaVu Sans Mono", monospace;
 }
+
 .key:hover {
-	background-color: #222;
-	color:#fff;
-	cursor: crosshair;
+    background-color: #222;
+    color: #fff;
+    cursor: crosshair;
 
 }
 
 .title {
-	text-transform: uppercase;
+    text-transform: uppercase;
 }
+
 .section {
-	margin-top: 2vh;
+    margin-top: 2vh;
 }
 
 canvas {
-	padding-left: 0;
+    padding-left: 0;
     padding-right: 0;
     margin-left: auto;
     margin-right: auto;
-	display: block;
-	border: 1px solid #fff;
+    display: block;
+    border: 1px solid #fff;
 }
