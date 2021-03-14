@@ -260,11 +260,11 @@ function execute(grid) {
                             cStep = rotate(cStep[0], cStep[1], 90);
                         }
                         break;
-                    case '꩜':
+                    case '⌾':
                         let warpCoords = [];
                         for (var i = 0; i < grid.length; i++) {
                             for (var j = 0; j < grid[i].length; j++) {
-                                if (grid[i][j] == '꩜' && i != cPos[0] && j != cPos[1]) {
+                                if (grid[i][j] == '⌾' && i != cPos[0] && j != cPos[1]) {
                                     warpCoords.push([i, j]);
                                 }
                             }
@@ -276,7 +276,7 @@ function execute(grid) {
                             cPos = [0, 0];
                         } else if (1 + '→←↑↓↖↗↘↙'.indexOf(grid[cPos[0]][cPos[1]])) {
                             spStep = dirs['→←↑↓↖↗↘↙'.indexOf(grid[cPos[0]][cPos[1]])];
-                            while (grid[cPos[0]][cPos[1]] != '꩜') {
+                            while (grid[cPos[0]][cPos[1]] != '⌾') {
                                 cPos = zipAdd(cPos, spStep);
                             }
                         } else {
