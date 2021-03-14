@@ -4,7 +4,7 @@ There are two canvases. one is your code itself and the other is a color grid.
 
 The code canvas extends forever in all directions.
 
-The color canvas extends forever in all directions, but the final result will fit the size of the drawing.
+The color canvas extends forever down and to the right, but the final result will fit the size of the drawing.
 
 ## Code canvas:
 

@@ -83,10 +83,8 @@ function parseArrowString(directions) {
     return matches;
 }
 
-// Execute Limn code
-let drawCanvas = document.getElementById("output");
-let ctx = drawCanvas.getContext("2d");
 
+//Execute Limn code
 function execute(grid) {
     // Code Canvas variables:
     let stack = []; // code stack
@@ -107,7 +105,10 @@ function execute(grid) {
     let dPtrCts = ["#ffffffff", 1]; // canvas pointer color and thickness (in px)
     let drawing = false;
     let finalOrigin = [0, 0];
-    let finalSize = [50, 50];
+    let finalSize = [0, 0];
+    let drawCanvas = document.createElement('canvas');
+    let ctx = drawCanvas.getContext("2d");
+    let outDiv = document.getElementById('out-div');
 
     ctx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
     ctx.textAlign = "left";
@@ -154,7 +155,7 @@ function execute(grid) {
             data = "";
         } else if (parsString) {
             data += ch;
-        } else if (ch == '¿') {
+        } else if (ch == '¿') { // debug command
             debug.innerHTML += "<b>Position:</b> " + String(cPos) + "\n\n";
             debug.innerHTML += "Grid:\n";
             console.log(grid.map(x => x.join('')).join("\n"));
@@ -440,9 +441,11 @@ function execute(grid) {
     result = ctx.getImageData(...finalOrigin, ...finalSize);
     finalSize = [finalSize[0] - finalOrigin[0], finalSize[1] - finalOrigin[1]];
     console.log(finalSize, finalOrigin);
-    drawCanvas.width = finalSize[0];
-    drawCanvas.height = finalSize[1];
+    drawCanvas.width = Math.ceil(finalSize[0]);
+    drawCanvas.height = Math.ceil(finalSize[1]);
     ctx.putImageData(result, 0, 0);
+    outDiv.innerHTML = "";
+    outDiv.appendChild(drawCanvas);
 }
 
 
@@ -541,12 +544,13 @@ window.addEventListener('DOMContentLoaded', (event) => {
             codeBox.removeEventListener("keypress", fun);
         }
     });
-
+    let canvasO = document.getElementById("output");
+    let ctxO = canvasO.getContext("2d");
     // Setup canvas
-    ctx.font = '16px Space Mono';
-    ctx.textAlign = "center";
-    ctx.fillStyle = "#ffffff";
-    ctx.fillText('Output will appear here!', drawCanvas.width / 2, drawCanvas.height / 2);
+    ctxO.font = '16px Space Mono';
+    ctxO.textAlign = "center";
+    ctxO.fillStyle = "#ffffff";
+    ctxO.fillText('Output will appear here!', canvasO.width / 2, canvasO.height / 2);
 
     document.getElementById("permalink").addEventListener("click", function(e) {
         let code = document.getElementById("code").value;
