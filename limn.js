@@ -5,7 +5,6 @@
 // An esoteric language for drawing n stuff
 
 // →←↑↓↖↗↘↙ for text grid movement
-// 🡸🡺🡹🡻🡼🡽🡾🡿• for visual grid movement
 // ⊗ to end the program.
 
 // for directions →↘↓↙←↖↑↗
@@ -104,14 +103,14 @@ function execute(grid) {
     let dRot = 0; // pointer rotation in degrees from the positive x axis
     let dPtrCts = ["#ffffffff", 1]; // canvas pointer color and thickness (in px)
     let drawing = false;
-    let finalOrigin = [0, 0];
+    // let finalOrigin = [0, 0];
     let finalSize = [0, 0];
     let drawCanvas = document.createElement('canvas');
     let ctx = drawCanvas.getContext("2d");
     let outDiv = document.getElementById('out-div');
 
-    ctx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
     ctx.textAlign = "left";
+
 
     while (grid[cPos[0]][cPos[1]] != '⊗') {
         let ch = grid[cPos[0]][cPos[1]];
@@ -394,14 +393,16 @@ function execute(grid) {
                     case '✎':
                         let data = stack.pop();
                         if (typeof data == "number") {
-
+                            console.log(dPos);
+                            ctx.strokeStyle = "#ff0000";
                             ctx.beginPath();
                             ctx.moveTo(dPos[0], dPos[1]);
                             let rotated = cRotate(dPos[0], dPos[1], dPos[0] + data, dPos[1], -dRot);
                             ctx.lineTo(rotated[0], rotated[1]);
                             dPos = rotated;
                             ctx.stroke();
-                        } else {
+
+                        } else { // Text drawing
                             ctx.save();
                             ctx.translate(dPos[0], dPos[1]);
                             ctx.rotate(dRot);
@@ -431,19 +432,30 @@ function execute(grid) {
             }
 
         }
+        if (typeof(grid[cPos[0]] || [])[cPos[1]] === "undefined") {
+            grid = padAllSides(grid, 1);
+            cPos = zipAdd(cPos, [1, 1]);
+        }
         cPos = zipAdd(cPos, cStep);
+
         if (completedOps > maxOps) {
             return;
         }
-        finalOrigin = [Math.min(finalOrigin[0], dPos[0]), Math.min(finalOrigin[1], dPos[1])];
+        // finalOrigin = [Math.min(finalOrigin[0], dPos[0]), Math.min(finalOrigin[1], dPos[1])];
         finalSize = [Math.max(finalSize[0], dPos[0]), Math.max(finalSize[1], dPos[1])];
     }
-    result = ctx.getImageData(...finalOrigin, ...finalSize);
-    finalSize = [finalSize[0] - finalOrigin[0], finalSize[1] - finalOrigin[1]];
-    console.log(finalSize, finalOrigin);
-    drawCanvas.width = Math.ceil(finalSize[0]);
-    drawCanvas.height = Math.ceil(finalSize[1]);
-    ctx.putImageData(result, 0, 0);
+    // // still weird, needs more fixes.
+    // result = ctx.getImageData(0, 0, ...finalSize.reverse());
+    // // finalSize = [finalSize[0] - finalOrigin[0], finalSize[1] - finalOrigin[1]];
+    // console.log(finalSize);
+
+
+    // drawCanvas.width = Math.ceil(finalSize[0]) + 50;
+    // drawCanvas.height = Math.ceil(finalSize[1]) + 50;
+    // console.log(result);
+    // ctx.putImageData(result, 0, 0);
+    outDiv.style.width = finalSize[0] + "px";
+    outDiv.style.height = finalSize[1] + "px";
     outDiv.innerHTML = "";
     outDiv.appendChild(drawCanvas);
 }
