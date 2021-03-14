@@ -2,96 +2,91 @@
 <html lang="en">
 
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Limn Language</title>
-	<link rel="preconnect" href="https://fonts.gstatic.com">
-	<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital@0;1&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css"
-		integrity="sha512-EZLkOqwILORob+p0BXZc+Vm3RgJBOe1Iq/0fiI7r/wJgzOFZMlsqTa29UEl6v6U6gsV4uIpsNZoV32YZqrCRCQ=="
-		crossorigin="anonymous" />
-	<link rel="stylesheet" href="dark-skeleton.css">
-	<link rel="stylesheet" href="dejavusansmono_book/stylesheet.css">
-	<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Limn Language</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital@0;1&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css" integrity="sha512-EZLkOqwILORob+p0BXZc+Vm3RgJBOe1Iq/0fiI7r/wJgzOFZMlsqTa29UEl6v6U6gsV4uIpsNZoV32YZqrCRCQ==" crossorigin="anonymous" />
+    <link rel="stylesheet" href="dark-skeleton.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/maxwell-k/dejavu-sans-mono-web-font/index.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-	<div class="row">
-		<div class="twelve columns">
-			<div class="center">
-				<h2>
-					Limn Interpreter
-				</h2>
-				<i>A drawing based programming language for the unfaint of heart</i>
-			</div>
+    <div class="row">
+        <div class="twelve columns">
+            <div class="center">
+                <h2>
+                    Limn Interpreter
+                </h2>
+                <i>A drawing based programming language for the unfaint of heart</i>
+            </div>
 
-		</div>
-	</div>
-	<div class="row section">
-		<div class="twelve columns">
-			<div class="container">
-				<h5 class="title">Symbols</h5>
-				<div id="keyboard">
+        </div>
+    </div>
+    <div class="row section">
+        <div class="twelve columns">
+            <div class="container">
+                <h5 class="title">Symbols</h5>
+                <div id="keyboard">
 
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="row section">
-		<div class="twelve columns">
-			<div class="container">
-				<h5 class="title">Code</h5>
-				<textarea class="u-full-width" id="code" placeholder="Enter Code.."
-					oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row section">
+        <div class="twelve columns">
+            <div class="container">
+                <h5 class="title">Code</h5>
+                <textarea class="u-full-width" id="code" placeholder="Enter Code.." oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'></textarea>
 
-			</div>
-		</div>
-	</div>
-	<div class="row section">
-		<div class="container">
-			<div class="six columns">
-				<h5 class="title">Input</h5>
-				<textarea id="input" placeholder="Enter Input.."
-					oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'></textarea>
-			</div>
-			<div class="six columns">
-				<h5 class="title">Max Operations</h5>
-				<input type="text" id="max-ops" value="1000">
-			</div>
-		</div>
-	</div>
-	<div class="row section">
-		<div class="twelve columns">
-			<div class="container">
-				<input class="button-primary" id="execute" type="submit" value="run">
-				<input class="button-primary" id="permalink" type="submit" value="permalink">
-			</div>
-		</div>
-	</div>
-	<div class="row">
-		<div class="twelve columns">
-			<div class="container">
-				<h5 class="title">output</h5>
-			</div>
+            </div>
+        </div>
+    </div>
+    <div class="row section">
+        <div class="container">
+            <div class="six columns">
+                <h5 class="title">Input</h5>
+                <textarea id="input" placeholder="Enter Input.." oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'></textarea>
+            </div>
+            <div class="six columns">
+                <h5 class="title">Max Operations</h5>
+                <input type="text" id="max-ops" value="1000">
+            </div>
+        </div>
+    </div>
+    <div class="row section">
+        <div class="twelve columns">
+            <div class="container">
+                <input class="button-primary" id="execute" type="submit" value="run">
+                <input class="button-primary" id="permalink" type="submit" value="permalink">
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="twelve columns">
+            <div class="container">
+                <h5 class="title">output</h5>
+            </div>
 
-			<canvas id="output" width="250" height="200">
-				Sorry, but your browser does not support the &lt;canvas&gt; functionality that Limn uses. Please <a
-					href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/canvas#browser_compatibility">check
-					here</a> for more info, or file an issue on github if something is wrong.
-			</canvas>
+            <canvas id="output" width="250" height="200">
+                Sorry, but your browser does not support the &lt;canvas&gt; functionality that Limn uses. Please <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/canvas#browser_compatibility">check
+                    here</a> for more info, or file an issue on github if something is wrong.
+            </canvas>
 
-		</div>
-	</div>
-	<div class="row">
-		<div class="twelve columns">
-			<div class="container">
-				<pre><code id  = "console">Debug output will appear here.</code></pre>
-			</div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="twelve columns">
+            <div class="container">
+                <pre><code id  = "console">Debug output will appear here.</code></pre>
+            </div>
 
-		</div>
-	</div>
+        </div>
+    </div>
 
-	<script src="limn.js"></script>
+    <script src="limn.js"></script>
 </body>
 
 </html>
