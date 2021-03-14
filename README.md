@@ -33,7 +33,6 @@ The idea behind limn is to create a self modifying language that can create imag
 
 #### TODO: 
 * flood filling without crashing 
-* infinite drawing canvas
 * prevent permalinking from reloading the page
 * fix text sizing
 * drawing copied areas

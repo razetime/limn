@@ -130,7 +130,7 @@ function execute(grid) {
             cPos = zipAdd(cPos, cStep.map(x => -x));
         } else if (ch == '"' && !parsString) {
             parsString = true;
-        } else if (ch == '\\' && parsString) { // Standard JS Escape support
+        } else if (ch == '\\' && parsString) { // Simple JS Escape support
             let d = grid[cPos[0] + cStep[0]][cPos[1] + cStep[1]];
             switch (d) {
                 case 'n':
@@ -437,10 +437,11 @@ function execute(grid) {
         finalOrigin = [Math.min(finalOrigin[0], dPos[0]), Math.min(finalOrigin[1], dPos[1])];
         finalSize = [Math.max(finalSize[0], dPos[0]), Math.max(finalSize[1], dPos[1])];
     }
-    finalSize = [finalOrigin[0] - finalSize[0], finalOrigin[1] - finalSize[1]];
     result = ctx.getImageData(...finalOrigin, ...finalSize);
-    drawCanvas.width = result[0];
-    drawCanvas.hirhgt = result[1];
+    finalSize = [finalSize[0] - finalOrigin[0], finalSize[1] - finalOrigin[1]];
+    console.log(finalSize, finalOrigin);
+    drawCanvas.width = finalSize[0];
+    drawCanvas.height = finalSize[1];
     ctx.putImageData(result, 0, 0);
 }
 
