@@ -39,7 +39,7 @@ Once the data is retrieved:
 * If the boolean is true, All commands are ignored, and only strings/integers are parsed. All data parsed is pushed to stack.
 * Otherwise, the data is pushed directly to stack, as a string.
 
-`⮺` is used for copying. It takes an arrow string, and moves to the place it indicates. Then it takes two integers, m and n, and copies an area of m x n characters to stack as a newline separated string. Ignores direction. (needs more changes and clarification)
+`♼` is used for copying. It takes an arrow string, and moves to the place it indicates. Then it takes two integers, m and n, and copies an area of m x n characters to stack as a newline separated string. Ignores direction. (needs more changes and clarification)
 
 `✎` is the main method for self-modification. It takes a single line string or integer, and prints it in the direction(s) specified by an arrow string. This moves the program cursor.
 Eg: "3→4↑" prints 3 characters to the right and 4 characters upward.
@@ -78,7 +78,7 @@ These are commands which operate on the drawing canvas alone.
 
 `⸗` changes line colour and thickness, given two strings. Thickness value also controls text size.
 
-`■` fills a closed area with a specific color, in a HTML canvas supported string format(rgba, 8 digit hex, color name).
+`◍` fills a closed area with a specific color, in a HTML canvas supported string format(rgba, 8 digit hex, color name).
 
 **Modified commands:**
 
@@ -92,5 +92,5 @@ These are commands which operate on the drawing canvas alone.
 
 `⊛` sets a random direction in the drawing canvas(0-359).
 
-`⮺` copies a region given arrow string, width and height and pushes an Image Object to the stack.
+`♼` copies a region given arrow string, width and height and pushes an Image Object to the stack.
 
